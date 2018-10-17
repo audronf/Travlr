@@ -1,2 +1,0 @@
-# Funtrip
-Funtrip - SIPII
