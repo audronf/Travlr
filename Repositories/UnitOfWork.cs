@@ -1,4 +1,5 @@
 using Funtrip.Repositories.Database;
+using Repositories;
 using Repositories.Interfaces;
 
  namespace Persistence
@@ -9,6 +10,12 @@ using Repositories.Interfaces;
         public UnitOfWork(DataBaseContext context)
         {
             _context = context;
+            ActividadRepository = new ActividadRepository(_context);
+            EncuestaRepository = new EncuestaRepository(_context);
+            FechaDisponibilidadRepository = new FechaDisponibilidadRepository(_context);
+            FondoComunRepository = new FondoComunRepository(_context);
+            GrupoRepository = new GrupoRepository(_context);
+            UsuarioRepository = new UsuarioRepository(_context);
         }
         public IActividadRepository ActividadRepository { get; private set; }
         public IEncuestaRepository EncuestaRepository { get; private set; }

@@ -1,5 +1,5 @@
 using System;
- namespace Repositories.Interfaces
+namespace Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {   
