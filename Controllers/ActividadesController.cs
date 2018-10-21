@@ -5,11 +5,11 @@ using Repositories.Interfaces;
 
 namespace Funtrip.Controllers
 {
-    public class UsuariosController : Controller
+    public class ActividadesController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         public IUnitOfWork UnitOfWork { get { return this._unitOfWork; } }
-        public UsuariosController(IUnitOfWork unitOfWork)
+        public ActividadesController(IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;
         }
@@ -18,22 +18,22 @@ namespace Funtrip.Controllers
             return View();
         }
 
-        [HttpGet("Create")]
+        [HttpGet("actividad")]
         public IActionResult Create()
         {
             return View();
         }
 
-        [HttpPost("Create")]
-        public IActionResult Create(UsuarioViewModel uvm)
+        [HttpPost("actividad")]
+        public IActionResult Create(ActividadViewModel avm)
         {
             if (ModelState.IsValid)
             {
-                var user = new Usuario { Email = uvm.Email, Nombre = uvm.Nombre, Pass = uvm.Password};
-                UnitOfWork.UsuarioRepository.Add(user);
+                var actividad = new Actividad { Descripcion = avm.Descripcion, FechaHora = avm.FechaHora};
+                UnitOfWork.ActividadRepository.Add(actividad);
                 UnitOfWork.Complete();
             }
-            return RedirectToAction("Index", "Usuarios");
+            return RedirectToAction("Index", "Actividades");
         }
     }
 }
