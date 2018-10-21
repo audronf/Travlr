@@ -1,0 +1,29 @@
+@using Microsoft.AspNetCore.Identity;
+@using Funtrip.Models.Views
+@using Funtrip.Models
+@model LoginViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Usuario> SignInManager
+
+@using (Html.BeginForm("Login", "Account", FormMethod.Post))
+{
+    <div asp-validation-summary="All"></div>
+    <div class='form-group'>
+        @Html.LabelFor(model => model.Nombre)
+        @Html.EditorFor(model => model.Nombre)
+        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger"})
+    </div>
+    <div class='form-group'>
+        @Html.LabelFor(model => model.Password)
+        @Html.EditorFor(model => model.Password)
+        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger"})
+    </div>
+    <div class='form-group'>
+        @Html.LabelFor(model => model.RememberMe)
+        @Html.EditorFor(model => model.RememberMe)
+        @Html.ValidationMessageFor(model => model.RememberMe, "", new { @class = "text-danger"})
+    </div>
+    <div>
+        <input type="submit" value="Login"/>
+    </div>
+}
