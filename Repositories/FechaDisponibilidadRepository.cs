@@ -9,7 +9,5 @@ namespace Repositories
         public FechaDisponibilidadRepository(DbContext context) : base(context)
         {
         }
-
-        public DbContext DbContext{ get { return Context as DbContext; } }
     }
 }

@@ -22,7 +22,6 @@ using Repositories.Interfaces;
         public IFechaDisponibilidadRepository FechaDisponibilidadRepository { get; private set; }
         public IFondoComunRepository FondoComunRepository { get; private set; }
         public IGrupoRepository GrupoRepository { get; private set; }
-
         public int Complete()
         {
             return _context.SaveChanges();

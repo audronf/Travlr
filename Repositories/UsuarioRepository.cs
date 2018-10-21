@@ -19,7 +19,10 @@ namespace Repositories
             this._options = options;
             this._userManager = userManager;
         }
-                public UserManager<Usuario> UserManager
+
+        public DbContext DbContext{ get { return Context as DbContext; } }
+
+        public UserManager<Usuario> UserManager
         {
             get { return this._userManager; }
         }

@@ -61,8 +61,6 @@ namespace Funtrip
                 options.Lockout.AllowedForNewUsers = true;
 
                 // User settings.
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
             });
 
