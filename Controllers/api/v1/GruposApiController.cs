@@ -3,7 +3,7 @@ using Funtrip.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Interfaces;
 
-// Estos API controller no se usan por ahora pero los dejo ya creados, usamos los otros controller para poder testearlos con vistas simples
+// Estos API controller no se usan por ahora pero los dejo ya creados, usamos los otros controller para poder testearlos con vistas simples.
 namespace Funtrip.Controllers
 {
     [Route("api/v1/[controller]")]
