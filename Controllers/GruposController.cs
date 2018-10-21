@@ -41,12 +41,7 @@ namespace Funtrip.Controllers
                 var fondoComun = new FondoComun { Monto = 0};
                 var logged = User.Identity.Name;
                 var admin = _userRepository.UserManager.FindByNameAsync(logged);
-                var newadm = new Usuario{
-                    Id = admin.Result.Id,
-                    Nombre = admin.Result.Nombre,
-                    Email = admin.Result.Email,
-                };
-                var grupo = new Grupo { Administrador = newadm, FondoComun = fondoComun};
+                var grupo = new Grupo { Administrador = admin.Result, FondoComun = fondoComun};
                 UnitOfWork.GrupoRepository.Add(grupo);
                 UnitOfWork.Complete();
             }
