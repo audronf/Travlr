@@ -1,0 +1,23 @@
+@model Funtrip.Models.Views.GrupoViewModel
+
+@{
+}
+
+<h2>Create</h2>
+
+
+    <div class="form-horizontal">
+        <h4>Techs</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <form action="Create" method="POST">
+                <input type="submit" name="Create" value="Crear Grupo" />
+            </form>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>

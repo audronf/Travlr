@@ -1,10 +1,11 @@
 #region Using
 using Microsoft.EntityFrameworkCore;
 using Funtrip.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 #endregion
- namespace Funtrip.Repositories.Database
+namespace Funtrip.Repositories.Database
 {
-    public class DataBaseContext : DbContext
+    public class DataBaseContext : IdentityDbContext<Usuario>
     {
         public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options) {}
         public DbSet<Actividad> Actividades { get; set; }
@@ -16,12 +17,12 @@ using Funtrip.Models;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UsuarioGrupo>()
-            .HasKey(g => new { g.UsuarioID, g.GrupoID });
+            .HasKey(g => new { g.Id, g.GrupoID });
 
             modelBuilder.Entity<UsuarioGrupo>()
             .HasOne(us => us.Usuario)
             .WithMany(gr => gr.UsuarioGrupos)
-            .HasForeignKey(us => us.UsuarioID);
+            .HasForeignKey(us => us.Id);
 
             modelBuilder.Entity<UsuarioGrupo>()
             .HasOne(us => us.Grupo)
