@@ -8,7 +8,6 @@ namespace Repositories.Interfaces
         IFechaDisponibilidadRepository FechaDisponibilidadRepository { get; }
         IFondoComunRepository FondoComunRepository { get; }
         IGrupoRepository GrupoRepository { get; }
-        IUsuarioRepository UsuarioRepository { get; }
         int Complete();
     }
 }
