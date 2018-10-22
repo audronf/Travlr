@@ -58,7 +58,7 @@ namespace Funtrip.Controllers
         [HttpPost("JoinGroup")]
         public IActionResult JoinGroup(int cod)
         {
-            if(ModelState.IsValid)
+            if(ModelState.IsValid )
             {
                 var grupo = UnitOfWork.GrupoRepository.Get(cod);
                 var usuario = _userRepository.UserManager.FindByNameAsync(User.Identity.Name);
