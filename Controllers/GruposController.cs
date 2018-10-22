@@ -39,13 +39,32 @@ namespace Funtrip.Controllers
             if (ModelState.IsValid)
             {
                 var fondoComun = new FondoComun { Monto = 0};
-                var logged = User.Identity.Name;
-                var admin = _userRepository.UserManager.FindByNameAsync(logged);
+                var admin = _userRepository.UserManager.FindByNameAsync(User.Identity.Name);
                 var grupo = new Grupo { Administrador = admin.Result, FondoComun = fondoComun};
+                var usuarioGrupo = new UsuarioGrupo { Usuario = admin.Result, Grupo = grupo };
+                UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo);
                 UnitOfWork.GrupoRepository.Add(grupo);
                 UnitOfWork.Complete();
             }
             return RedirectToAction("Create", "Grupo");
+        }
+        
+        [HttpGet("JoinGroup")]
+        public IActionResult JoinGroup()
+        {
+            return View();
+        }
+        
+        [HttpPost("JoinGroup")]
+        public IActionResult JoinGroup(int cod)
+        {
+            if(ModelState.IsValid)
+            {
+                var grupo = UnitOfWork.GrupoRepository.Get(cod);
+                var usuario = _userRepository.UserManager.FindByNameAsync(User.Identity.Name);
+                var usuarioGrupo = new UsuarioGrupo { Usuario = usuario.Result, Grupo = grupo };
+            }
+            return RedirectToAction("JoinGroup","Grupo");
         }
     }
 }

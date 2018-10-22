@@ -15,13 +15,14 @@ using Repositories.Interfaces;
             FechaDisponibilidadRepository = new FechaDisponibilidadRepository(_context);
             FondoComunRepository = new FondoComunRepository(_context);
             GrupoRepository = new GrupoRepository(_context);
-
+            UsuarioGrupoRepository = new UsuarioGrupoRepository(_context);
         }
         public IActividadRepository ActividadRepository { get; private set; }
         public IEncuestaRepository EncuestaRepository { get; private set; }
         public IFechaDisponibilidadRepository FechaDisponibilidadRepository { get; private set; }
         public IFondoComunRepository FondoComunRepository { get; private set; }
         public IGrupoRepository GrupoRepository { get; private set; }
+        public IUsuarioGrupoRepository UsuarioGrupoRepository { get; private set; }
         public int Complete()
         {
             return _context.SaveChanges();
