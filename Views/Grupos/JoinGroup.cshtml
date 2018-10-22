@@ -1,0 +1,31 @@
+@model Funtrip.Models.Views.GrupoViewModel
+
+@{
+}
+<!-- No tengo la menor idea de por que no manda el Id que estoy ingresando -->
+<h2>Unirse a un Grupo</h2>
+
+<!-- <form asp-action="JoinGroup" method="POST">
+    <div class="form-horizontal">
+        <h4>Codigo grupo</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="GrupoID" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="GrupoID" class="form-control" />
+                <span asp-validation-for="GrupoID" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Unirse" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form> -->
+@using (Html.BeginForm("JoinGroup", "Grupos", FormMethod.Post)){
+    @Html.HiddenFor(model => model.GrupoID)
+    @Html.TextAreaFor(model => model.GrupoID, new { @class = "form-control" })  
+    <input type="submit" value="Unirse" class="btn btn-default" />
+}
