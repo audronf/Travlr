@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,6 +11,7 @@ namespace Funtrip.Models
         public string Nombre{ get; set; }
         public string Password { get; set; }
         public override string Email { get; set; }
+        public virtual ICollection<Grupo> GruposAdmin { get; set; }
         public virtual ICollection<UsuarioGrupo> UsuarioGrupos { get; set; }
     }
 }

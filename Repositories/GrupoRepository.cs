@@ -8,6 +8,13 @@ namespace Repositories
     {
         public GrupoRepository(DbContext context) : base(context)
         {
+        
+        }
+        public DbContext DbContext{ get { return Context as DbContext; } }
+        public Grupo GetGrupoByIdGrupo(int GrupoID)
+        {
+            var grupo = Context.Set<Grupo>().Find(GrupoID);
+            return grupo;
         }
     }
 }

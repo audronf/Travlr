@@ -42,6 +42,7 @@ namespace Funtrip
             services.AddDbContext<DataBaseContext>(options =>  options.UseNpgsql(Configuration["ConnectionString"]));
             services.AddScoped<DataBaseContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<DataBaseContext>();
             services.AddIdentity<Usuario, IdentityRole>()
                     .AddEntityFrameworkStores<DataBaseContext>()
                     .AddDefaultTokenProviders();

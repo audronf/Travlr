@@ -1,3 +1,4 @@
+using System.Linq;
 using Funtrip.Models;
 using Funtrip.Models.Views;
 using Repositories;
@@ -36,35 +37,38 @@ namespace Funtrip.Controllers
         [HttpPost("Create")]
         public IActionResult Create(GrupoViewModel gvm)
         {
-            if (ModelState.IsValid)
-            {
-                var fondoComun = new FondoComun { Monto = 0};
-                var admin = _userRepository.UserManager.FindByNameAsync(User.Identity.Name);
-                var grupo = new Grupo { Administrador = admin.Result, FondoComun = fondoComun};
-                var usuarioGrupo = new UsuarioGrupo { Usuario = admin.Result, Grupo = grupo };
-                UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo);
-                UnitOfWork.GrupoRepository.Add(grupo);
-                UnitOfWork.Complete();
-            }
-            return RedirectToAction("Create", "Grupo");
+            
+            var fondoComun = new FondoComun { Monto = 0 };
+            var admin = _userRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var grupo = new Grupo {AdministradorId=admin.Id, FondoComun = fondoComun};
+            var usuarioGrupo = new UsuarioGrupo { UsuarioId = admin.Id, Grupo = grupo };
+            UnitOfWork.GrupoRepository.Add(grupo);
+            UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo); 
+            UnitOfWork.Complete();
+            return RedirectToAction("Create", "Grupos");
         }
         
-        [HttpGet("JoinGroup")]
-        public IActionResult JoinGroup()
-        {
-            return View();
-        }
+        // [HttpGet("JoinGroup")]
+        // public IActionResult JoinGroup()
+        // {
+        //     return View();
+        // }
         
-        [HttpPost("JoinGroup")]
-        public IActionResult JoinGroup(int cod)
-        {
-            if(ModelState.IsValid )
-            {
-                var grupo = UnitOfWork.GrupoRepository.Get(cod);
-                var usuario = _userRepository.UserManager.FindByNameAsync(User.Identity.Name);
-                var usuarioGrupo = new UsuarioGrupo { Usuario = usuario.Result, Grupo = grupo };
-            }
-            return RedirectToAction("JoinGroup","Grupo");
-        }
+        // [HttpPost("JoinGroup")]
+        // public IActionResult JoinGroup(int coda)
+        // {
+        //     //Harcodeado porque no puedo hacer que llegue el cod de la vista
+        //     int cod = 1;
+        //     var usuario = _userRepository.UserManager.FindByNameAsync(User.Identity.Name);
+        //     var grupo = UnitOfWork.GrupoRepository.Get(cod);
+        //     var yaEsMiembo = UnitOfWork.UsuarioGrupoRepository.GetAll().ToList().Any(ug => ug.GrupoID==cod && ug.Id==usuario.Result.Id);
+        //     if(!yaEsMiembo)
+        //     {
+        //         var usuarioGrupo = new UsuarioGrupo { Usuario = usuario.Result, Grupo = grupo, GrupoID = grupo.GrupoID };
+        //         UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo);
+        //         UnitOfWork.Complete();
+        //     }
+        //     return RedirectToAction("","");
+        // }
     }
 }

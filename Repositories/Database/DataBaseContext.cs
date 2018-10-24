@@ -17,12 +17,12 @@ namespace Funtrip.Repositories.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UsuarioGrupo>()
-            .HasKey(g => new { g.Id, g.GrupoID });
+            .HasKey(g => new { g.UsuarioId, g.GrupoID });
 
             modelBuilder.Entity<UsuarioGrupo>()
             .HasOne(us => us.Usuario)
             .WithMany(gr => gr.UsuarioGrupos)
-            .HasForeignKey(us => us.Id);
+            .HasForeignKey(us => us.UsuarioId);
 
             modelBuilder.Entity<UsuarioGrupo>()
             .HasOne(us => us.Grupo)
