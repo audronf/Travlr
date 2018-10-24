@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Funtrip.Migrations
+namespace Travlr.Migrations
 {
     public partial class InitialCreate : Migration
     {

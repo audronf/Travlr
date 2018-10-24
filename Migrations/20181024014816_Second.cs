@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Funtrip.Migrations
+namespace Travlr.Migrations
 {
     public partial class Second : Migration
     {

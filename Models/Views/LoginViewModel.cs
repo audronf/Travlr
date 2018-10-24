@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Funtrip.Models.Views
+namespace Travlr.Models.Views
 {
     public class LoginViewModel
     {

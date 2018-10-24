@@ -1,4 +1,4 @@
-using Funtrip.Models;
+using Travlr.Models;
 
 namespace Repositories.Interfaces
 {

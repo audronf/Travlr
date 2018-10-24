@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace Funtrip.Models
+namespace Travlr.Models
 {
     public class Usuario : IdentityUser
     {

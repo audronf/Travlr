@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Funtrip.Models
+namespace Travlr.Models
 {
     public class UsuarioGrupo
     {

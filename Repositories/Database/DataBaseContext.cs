@@ -1,9 +1,9 @@
 #region Using
 using Microsoft.EntityFrameworkCore;
-using Funtrip.Models;
+using Travlr.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 #endregion
-namespace Funtrip.Repositories.Database
+namespace Travlr.Repositories.Database
 {
     public class DataBaseContext : IdentityDbContext<Usuario>
     {

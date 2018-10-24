@@ -10,13 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Funtrip.Repositories.Database;
+using Travlr.Repositories.Database;
 using Repositories.Interfaces;
 using Persistence;
 using Microsoft.AspNetCore.Identity;
-using Funtrip.Models;
+using Travlr.Models;
 
-namespace Funtrip
+namespace Travlr
 {
     public class Startup
     {

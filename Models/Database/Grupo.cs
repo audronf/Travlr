@@ -2,12 +2,13 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Funtrip.Models
+namespace Travlr.Models
 {
     public class Grupo
     {
         public int GrupoID { get; set; }
         public string AdministradorId { get; set; }
+        public string Nombre { get; set; }
         public virtual FondoComun FondoComun { get; set; }
         public virtual ICollection<Actividad> Actividades { get; set; }
         public virtual ICollection<Encuesta> Encuestas { get; set; }

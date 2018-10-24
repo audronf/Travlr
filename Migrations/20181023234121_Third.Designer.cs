@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Travlr.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20181024014816_Second")]
-    partial class Second
+    [Migration("20181023234121_Third")]
+    partial class Third
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -99,6 +99,8 @@ namespace Travlr.Migrations
                     b.Property<string>("AdministradorId");
 
                     b.Property<int?>("FondoComunID");
+
+                    b.Property<string>("Nombre");
 
                     b.HasKey("GrupoID");
 
@@ -319,7 +321,7 @@ namespace Travlr.Migrations
             modelBuilder.Entity("Travlr.Models.Grupo", b =>
                 {
                     b.HasOne("Travlr.Models.Usuario", "Administrador")
-                        .WithMany()
+                        .WithMany("GruposAdmin")
                         .HasForeignKey("AdministradorId");
 
                     b.HasOne("Travlr.Models.FondoComun", "FondoComun")

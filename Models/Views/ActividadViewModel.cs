@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections.Generic;
 
-namespace Funtrip.Models.Views
+namespace Travlr.Models.Views
 {
     public class ActividadViewModel
     {

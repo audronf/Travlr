@@ -1,4 +1,4 @@
-using Funtrip.Models;
+using Travlr.Models;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 
@@ -11,10 +11,5 @@ namespace Repositories
         
         }
         public DbContext DbContext{ get { return Context as DbContext; } }
-        public Grupo GetGrupoByIdGrupo(int GrupoID)
-        {
-            var grupo = Context.Set<Grupo>().Find(GrupoID);
-            return grupo;
-        }
     }
 }

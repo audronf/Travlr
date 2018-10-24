@@ -1,4 +1,4 @@
-using Funtrip.Repositories.Database;
+using Travlr.Repositories.Database;
 using Repositories;
 using Repositories.Interfaces;
 

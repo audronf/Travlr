@@ -1,4 +1,4 @@
-namespace Funtrip.Models
+namespace Travlr.Models
 {
     public class FondoComun
     {

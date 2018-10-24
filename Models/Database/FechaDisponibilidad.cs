@@ -1,6 +1,6 @@
 using System;
 
-namespace Funtrip.Models
+namespace Travlr.Models
 {
     public class FechaDisponibilidad
     {

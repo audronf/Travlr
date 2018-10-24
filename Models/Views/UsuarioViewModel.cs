@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Funtrip.Models.Views
+namespace Travlr.Models.Views
 {
     public class UsuarioViewModel
     {

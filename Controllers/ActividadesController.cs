@@ -1,9 +1,9 @@
-using Funtrip.Models;
-using Funtrip.Models.Views;
+using Travlr.Models;
+using Travlr.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Interfaces;
 
-namespace Funtrip.Controllers
+namespace Travlr.Controllers
 {
     public class ActividadesController : Controller
     {

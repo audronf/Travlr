@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Funtrip.Models
+namespace Travlr.Models
 {
     public class Encuesta
     {
