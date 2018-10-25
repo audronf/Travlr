@@ -8,6 +8,7 @@ using Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Travlr.Repositories.Database;
+using System.Collections.Generic;
 
 namespace Travlr.Controllers
 {
@@ -26,7 +27,14 @@ namespace Travlr.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var grupos = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(u => u.UsuarioId == logged.Id);
+            List<Grupo> gruposUsuario = new List<Grupo>();
+            foreach(var grupo in grupos)
+            {
+                gruposUsuario.Add(UnitOfWork.GrupoRepository.Get(grupo.GrupoID));
+            }
+            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre}));
         }
 
         [HttpGet("Create")]
@@ -57,25 +65,33 @@ namespace Travlr.Controllers
             }
         }
 
-        [HttpGet("Join")]
-        public IActionResult Join()
+        [HttpGet("Unirse")]
+        public IActionResult Unirse()
         {
             return View();
         }
 
-        [HttpPost("Join")]
-        public IActionResult Join(GrupoViewModel gvm)
+        [HttpPost("Unirse")]
+        public IActionResult Unirse(GrupoViewModel gvm)
         {
-            var usuario = _userRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            var admin = UsuarioRepository.UserManager.FindByIdAsync(grupo.AdministradorId).Result;
             var yaEsMiembo = UnitOfWork.UsuarioGrupoRepository.GetAll().ToList().Any(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id);
             if (!yaEsMiembo)
             {
                 var usuarioGrupo = new UsuarioGrupo { UsuarioId = usuario.Id, Grupo = grupo, GrupoID = grupo.GrupoID };
                 UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo);
                 UnitOfWork.Complete();
+                return Json(new { mensaje = "Te uniste al grupo " + grupo.Nombre + " de " + admin.UserName});
             }
-            return RedirectToAction("Join", "Grupos");
+            return Json (new { mensaje = "Ya formas parte de ese grupo"});
+        }
+
+        [HttpGet("Listado")]
+        public IActionResult Listado()
+        {
+            return View();
         }
     }
 }
