@@ -87,11 +87,5 @@ namespace Travlr.Controllers
             }
             return Json (new { mensaje = "Ya formas parte de ese grupo"});
         }
-
-        [HttpGet("Listado")]
-        public IActionResult Listado()
-        {
-            return View();
-        }
     }
 }
