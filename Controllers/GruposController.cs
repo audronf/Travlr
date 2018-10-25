@@ -87,16 +87,19 @@ namespace Travlr.Controllers
             }
             return Json (new { mensaje = "Ya formas parte de ese grupo"});
         }
-        public IActionResult Detalles(GrupoViewModel gvm)
+
+        [HttpGet("Detalles")]
+        public IActionResult Detalles(int id)
         {
-            var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            var grupo = UnitOfWork.GrupoRepository.Get(id);
             var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
             var miembros = new List<Usuario>();
             foreach(var miembro in miembrosGrupo)
             {
                 miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
             }
-            return View(miembros);
+            var usuariosGrupo = new UsuariosGrupoViewModel {Usuarios = miembros,NombreGrupo = grupo.Nombre};
+            return View(usuariosGrupo);
         }
     }
 }
