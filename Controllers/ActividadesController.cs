@@ -35,5 +35,10 @@ namespace Travlr.Controllers
             }
             return RedirectToAction("Index", "Actividades");
         }
+
+        [HttpPut ("actividad")]
+        public IActionResult Modify(ActividadViewModel avm){
+            var actividad=UnitOfWork.ActividadRepository.Get(avm.id)
+        }
     }
 }

@@ -88,6 +88,17 @@ namespace Travlr.Controllers
             return Json (new { mensaje = "Ya formas parte de ese grupo"});
         }
 
+        /*Eliminado fisico de grupo */
+        [HttpDelete("Eliminar")]
+        public IActionResult Eliminar(int idGrupo){
+            var grupo=UnitOfWork.GrupoRepository.Get(idGrupo);
+            if(grupo==null){
+                return Json(new {mensaje="El id "+idGrupo+" no existe"});
+            }                        
+            UnitOfWork.GrupoRepository.Remove(grupo);
+            return Json(new{mensaje="Se ha eliminado el grupo correctamente"});
+        }
+
         [HttpGet("Detalles")]
         public IActionResult Detalles(int id)
         {

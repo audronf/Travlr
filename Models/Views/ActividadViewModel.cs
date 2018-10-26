@@ -7,6 +7,9 @@ namespace Travlr.Models.Views
     public class ActividadViewModel
     {
         [Required]
+        public int Id{get;}
+
+        [Required]
         public string Descripcion { get; set; }
 
         [Required]
