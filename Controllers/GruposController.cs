@@ -30,11 +30,11 @@ namespace Travlr.Controllers
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupos = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(u => u.UsuarioId == logged.Id);
             List<Grupo> gruposUsuario = new List<Grupo>();
-            foreach(var grupo in grupos)
+            foreach (var grupo in grupos)
             {
                 gruposUsuario.Add(UnitOfWork.GrupoRepository.Get(grupo.GrupoID));
             }
-            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre}));
+            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre }));
         }
 
         [HttpGet("Create")]
@@ -76,6 +76,10 @@ namespace Travlr.Controllers
         {
             var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            if (grupo == null)
+            {
+                return Json(new { mensaje = "No existe un grupo con ese código" });
+            }
             var admin = UsuarioRepository.UserManager.FindByIdAsync(grupo.AdministradorId).Result;
             var yaEsMiembo = UnitOfWork.UsuarioGrupoRepository.GetAll().ToList().Any(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id);
             if (!yaEsMiembo)
@@ -83,23 +87,63 @@ namespace Travlr.Controllers
                 var usuarioGrupo = new UsuarioGrupo { UsuarioId = usuario.Id, Grupo = grupo, GrupoID = grupo.GrupoID };
                 UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo);
                 UnitOfWork.Complete();
-                return Json(new { mensaje = "Te uniste al grupo " + grupo.Nombre + " de " + admin.UserName});
+                return Json(new { mensaje = "Te uniste al grupo " + grupo.Nombre + " de " + admin.UserName });
             }
-            return Json (new { mensaje = "Ya formas parte de ese grupo"});
+            return Json(new { mensaje = "Ya formas parte de ese grupo" });
         }
 
         [HttpGet("Detalles")]
         public IActionResult Detalles(int id)
         {
             var grupo = UnitOfWork.GrupoRepository.Get(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
             var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
             var miembros = new List<Usuario>();
-            foreach(var miembro in miembrosGrupo)
+            foreach (var miembro in miembrosGrupo)
             {
                 miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
             }
-            var usuariosGrupo = new UsuariosGrupoViewModel {Usuarios = miembros,NombreGrupo = grupo.Nombre};
+            var usuariosGrupo = new UsuariosGrupoViewModel { Usuarios = miembros, NombreGrupo = grupo.Nombre };
             return View(usuariosGrupo);
+        }
+
+        [HttpGet("DejarGrupo")]
+        public IActionResult DejarGrupo(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.Get(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
+            var miembros = new List<Usuario>();
+            foreach (var miembro in miembrosGrupo)
+            {
+                miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
+            }
+            var usuariosGrupo = new UsuariosGrupoViewModel { Usuarios = miembros, NombreGrupo = grupo.Nombre };
+            return View(usuariosGrupo);
+        }
+
+        //wip
+        [HttpPost("DejarGrupo")]
+        public IActionResult DejarGrupo(UsuariosGrupoViewModel gvm)
+        {
+            try
+            {
+                var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+                var usuarioGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id);
+               // UnitOfWork.UsuarioGrupoRepository.Remove();
+                UnitOfWork.Complete();
+                return RedirectToAction("Index", "Grupos");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return RedirectToAction("Error","Home");
+            }
         }
     }
 }
