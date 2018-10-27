@@ -3,43 +3,25 @@
 @{
 }
 
-@using (Html.BeginForm("DeleteConfirmation", "Movies", FormMethod.Post)){
-<h2>@ViewData["Confirmation"]</h2>
+@using (Html.BeginForm("DejarGrupoConfirm", "Grupos", FormMethod.Post)){
+<h2>Salirse</h2>
 <div>
-    <h4>@ViewData["Movie"]</h4>
+    <h4>Grupo</h4>
     <hr />
     <dl class="dl-horizontal">
-        <span>@Html.HiddenFor(model => model.ID)</span>
+        <span>@Html.HiddenFor(model => model.GrupoID)</span>
         <dt>
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.NombreGrupo)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ReleaseDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ReleaseDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Price)
+            @Html.DisplayFor(model => model.NombreGrupo)
         </dd>
     </dl>
 </div>
 <div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Delete" class="btn btn-default" />
+            <input type="submit" value="Salirse" class="btn btn-default" />
         </div>
     </div>
 </div>

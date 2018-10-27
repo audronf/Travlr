@@ -95,12 +95,13 @@ namespace Travlr.Controllers
         [HttpGet("Detalles")]
         public IActionResult Detalles(int id)
         {
-            var grupo = UnitOfWork.GrupoRepository.Get(id);
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
             if (grupo == null)
             {
                 return NotFound();
             }
             var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
+
             var miembros = new List<Usuario>();
             foreach (var miembro in miembrosGrupo)
             {
@@ -124,25 +125,50 @@ namespace Travlr.Controllers
             {
                 miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
             }
-            var usuariosGrupo = new UsuariosGrupoViewModel { Usuarios = miembros, NombreGrupo = grupo.Nombre };
+            var usuariosGrupo = new UsuariosGrupoViewModel { GrupoID = grupo.GrupoID, Usuarios = miembros, NombreGrupo = grupo.Nombre };
             return View(usuariosGrupo);
         }
 
-        //wip
         [HttpPost("DejarGrupo")]
-        public IActionResult DejarGrupo(UsuariosGrupoViewModel gvm)
+        public IActionResult DejarGrupoConfirm(UsuariosGrupoViewModel gvm)
         {
             try
             {
                 var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-                var usuarioGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id);
-               // UnitOfWork.UsuarioGrupoRepository.Remove();
+                var usuarioGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id).FirstOrDefault();
+                UnitOfWork.UsuarioGrupoRepository.RemoveUsuarioGrupo(usuarioGrupo);
                 UnitOfWork.Complete();
                 return RedirectToAction("Index", "Grupos");
             }
             catch (DbUpdateConcurrencyException)
             {
-                return RedirectToAction("Error","Home");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        [HttpGet("ManejoFondos")]
+        //wip, falta hacer el cshtml de esto
+        public IActionResult ManejoFondos(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            return View(grupo);
+        }
+
+        public IActionResult AgregarFondo(GrupoViewModel gvm)
+        {
+            try
+            {
+                var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+                grupo.FondoComun.Monto += gvm.monto;
+                return Json(new { mensaje = "Se agrego $" + gvm.monto + " al fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return RedirectToAction("Error", "Home");
             }
         }
     }
