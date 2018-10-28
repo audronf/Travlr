@@ -1,6 +1,7 @@
 using Travlr.Models;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
+using System.Linq;
 
 namespace Repositories
 {
@@ -10,11 +11,10 @@ namespace Repositories
         {
         }
         public DbContext DbContext{ get { return Context as DbContext; } }
-        public Grupo GetWithRelatedEntities(int cod)
+        public Grupo GetPeroCompleto(int cod)
         {
-            var culito = Context.Set<Grupo>().Find(cod);
-            culito.Administrador = Context.Set<Usuario>().Find(culito.AdministradorId);
-            return culito;
+            var grupo = Context.Set<Grupo>().Include(x => x.FondoComun).Where(gr => gr.GrupoID == cod).FirstOrDefault();
+            return grupo;
         }
     }
 }
