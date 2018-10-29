@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Travlr.Models.Views.GrupoViewModel>
+
 @{
 }
 
@@ -19,7 +20,9 @@
             </td>
             <td>
                 <a asp-action="Detalles" asp-route-id="@item.GrupoID">Detalles</a> |
-                <a asp-action="DejarGrupo" asp-route-id="@item.GrupoID">Me voy al carajo pelotudos</a> 
+                <a asp-action="DejarGrupo" asp-route-id="@item.GrupoID">Me voy al carajo pelotudos</a> |
+                <a asp-action="ManejoFondos" asp-route-id="@item.GrupoID">Manejo fiscal</a> |
+                <a asp-action="CrearEncuesta" asp-route-id="@item.GrupoID">Encuestas</a>
             </td>
         </tr>
 }
