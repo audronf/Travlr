@@ -76,7 +76,7 @@ namespace Travlr.Migrations
                     Id = table.Column<string>(nullable: false),
                     Nombre = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),                    
                     ActividadID = table.Column<int>(nullable: true),
                     EncuestaID = table.Column<int>(nullable: true)
                 },

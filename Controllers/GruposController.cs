@@ -101,9 +101,7 @@ namespace Travlr.Controllers
             }                        
             UnitOfWork.GrupoRepository.Remove(grupo);
             return Json(new{mensaje="Se ha eliminado el grupo correctamente"});
-        }
-
-       
+        }       
 
         [HttpGet("Detalles")]
         public IActionResult Detalles(int id)

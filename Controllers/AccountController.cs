@@ -47,7 +47,7 @@ namespace MvcMovie.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new Usuario { UserName = userViewModel.Nombre, Email = userViewModel.Email };
+                var user = new Usuario { UserName = userViewModel.Nombre, Email = userViewModel.Email, NickName=userViewModel.NickName };
                 var result = await UserManager.CreateAsync(user, userViewModel.Password);
                 if (result.Succeeded)
                 {
