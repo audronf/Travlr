@@ -147,29 +147,82 @@ namespace Travlr.Controllers
         }
 
         [HttpGet("ManejoFondos")]
-        //wip, falta hacer el cshtml de esto
         public IActionResult ManejoFondos(int id)
         {
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
             if (grupo == null)
             {
                 return NotFound();
-            }
-            return View(grupo);
+            }            
+            var usuariosGrupo = new GrupoViewModel { GrupoID = grupo.GrupoID, FondoComun = grupo.FondoComun };
+            return View(usuariosGrupo);
         }
 
-        public IActionResult AgregarFondo(GrupoViewModel gvm)
+        [HttpPost("ManejoFondos")]
+        public IActionResult ManejoFondos(GrupoViewModel gvm)
         {
             try
             {
                 var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
-                grupo.FondoComun.Monto += gvm.monto;
-                return Json(new { mensaje = "Se agrego $" + gvm.monto + " al fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                if(gvm.monto == 0)
+                {
+                    return Json(new { mensaje = "Formato invalido o monto = 0" });
+                }
+                else if(gvm.monto > 0)
+                {
+                    grupo.FondoComun.Monto += gvm.monto;
+                    UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
+                    UnitOfWork.Complete();
+                    return Json(new { mensaje = "Se agrego $" + gvm.monto + " al fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                }
+                else
+                {
+                    if((grupo.FondoComun.Monto + gvm.monto) > 0)
+                    { 
+                        grupo.FondoComun.Monto += gvm.monto;
+                        UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
+                        UnitOfWork.Complete();
+                        return Json(new { mensaje = "Se saco $" + gvm.monto*-1 + " del fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                    }
+                    else
+                    {
+                        return Json(new { mensaje = "El monto de un grupo no puede ser menor a $0"});
+                    }
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
                 return RedirectToAction("Error", "Home");
             }
+        }
+
+        [HttpGet("ListaEncuestas")]
+        public IActionResult ListaEncuestas()
+        {
+            return Json("wip");
+        }
+
+        [HttpGet("CrearEncuesta")]
+        public IActionResult CrearEncuesta(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }            
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID};
+            return View(grupoVM);
+        }
+
+        [HttpPost("CrearEncuesta")]
+        public IActionResult CrearEncuesta(GrupoViewModel gvm)
+        {
+            var encuesta = new Encuesta{Pregunta = gvm.Encuesta.Pregunta, Opciones = gvm.Encuesta.Opciones};
+            var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            grupo.Encuestas.Add(encuesta);
+            UnitOfWork.EncuestaRepository.Add(encuesta);
+            UnitOfWork.Complete();
+            return Json(new {mensaje = "putos putos putos"});
         }
     }
 }
