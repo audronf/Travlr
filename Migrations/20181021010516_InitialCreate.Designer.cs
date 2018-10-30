@@ -168,7 +168,7 @@ namespace Travlr.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("");
                 });
 
             modelBuilder.Entity("Travlr.Models.UsuarioGrupo", b =>

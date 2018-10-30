@@ -16,5 +16,9 @@ namespace Repositories
             var usuarioGrupo = Context.Set<UsuarioGrupo>().Find(codUsuario.ToString(), codGrupo);
             return usuarioGrupo;
         }
+        public void RemoveUsuarioGrupo(UsuarioGrupo ug)
+        {
+            Context.Set<UsuarioGrupo>().Remove(ug);
+        }
     }
 }

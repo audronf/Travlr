@@ -9,11 +9,11 @@ namespace Travlr.Controllers
     [Route("[controller]")]
     [Authorize]
 
-    public class ActividadesController : Controller
+    public class EncuestaController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         public IUnitOfWork UnitOfWork { get { return this._unitOfWork; } }
-        public ActividadesController(IUnitOfWork unitOfWork)
+        public EncuestaController(IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;
         }
@@ -22,7 +22,7 @@ namespace Travlr.Controllers
             return View();
         }
 
-        [HttpGet("actividad")]
+        [HttpGet("x")]
         public IActionResult Create()
         {
             return View();
@@ -38,7 +38,6 @@ namespace Travlr.Controllers
                 UnitOfWork.Complete();
             }
             return RedirectToAction("Index", "Actividades");
-        }    
-
+        }
     }
 }

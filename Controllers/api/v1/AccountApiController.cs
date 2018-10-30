@@ -15,13 +15,13 @@ using Travlr.Models.Views;
 
 namespace MvcMovie.Controllers
 {
-    [Route("[controller]")]
-    public class AccountController : Controller
+    [Route("api/v1/[controller]")]
+    public class AccountApiController : Controller
     {
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
 
-        public AccountController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
+        public AccountApiController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
         {
             this._userManager = userManager;
             this._signInManager = signInManager;

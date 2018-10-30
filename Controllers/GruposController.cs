@@ -30,11 +30,11 @@ namespace Travlr.Controllers
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupos = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(u => u.UsuarioId == logged.Id);
             List<Grupo> gruposUsuario = new List<Grupo>();
-            foreach(var grupo in grupos)
+            foreach (var grupo in grupos)
             {
                 gruposUsuario.Add(UnitOfWork.GrupoRepository.Get(grupo.GrupoID));
             }
-            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre}));
+            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre }));
         }
 
         [HttpGet("Create")]
@@ -76,6 +76,10 @@ namespace Travlr.Controllers
         {
             var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            if (grupo == null)
+            {
+                return Json(new { mensaje = "No existe un grupo con ese código" });
+            }
             var admin = UsuarioRepository.UserManager.FindByIdAsync(grupo.AdministradorId).Result;
             var yaEsMiembo = UnitOfWork.UsuarioGrupoRepository.GetAll().ToList().Any(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id);
             if (!yaEsMiembo)
@@ -83,9 +87,153 @@ namespace Travlr.Controllers
                 var usuarioGrupo = new UsuarioGrupo { UsuarioId = usuario.Id, Grupo = grupo, GrupoID = grupo.GrupoID };
                 UnitOfWork.UsuarioGrupoRepository.Add(usuarioGrupo);
                 UnitOfWork.Complete();
-                return Json(new { mensaje = "Te uniste al grupo " + grupo.Nombre + " de " + admin.UserName});
+                return Json(new { mensaje = "Te uniste al grupo " + grupo.Nombre + " de " + admin.UserName });
             }
-            return Json (new { mensaje = "Ya formas parte de ese grupo"});
+            return Json(new { mensaje = "Ya formas parte de ese grupo" });
+        }
+
+        /*Eliminado fisico de grupo */
+        [HttpGet("Eliminar")]
+        public IActionResult Eliminar(int id){
+            var grupo=UnitOfWork.GrupoRepository.Get(id);
+            if(grupo == null){
+                return Json(new {mensaje="El id "+id+" no existe"});
+            }                        
+            UnitOfWork.GrupoRepository.Remove(grupo);
+            return Json(new{mensaje="Se ha eliminado el grupo correctamente"});
+        }       
+
+        [HttpGet("Detalles")]
+        public IActionResult Detalles(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
+
+            var miembros = new List<Usuario>();
+            foreach (var miembro in miembrosGrupo)
+            {
+                miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
+            }
+            var usuariosGrupo = new UsuariosGrupoViewModel { Usuarios = miembros, NombreGrupo = grupo.Nombre };
+            return View(usuariosGrupo);
+        }
+
+        [HttpGet("DejarGrupo")]
+        public IActionResult DejarGrupo(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.Get(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
+            var miembros = new List<Usuario>();
+            foreach (var miembro in miembrosGrupo)
+            {
+                miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
+            }
+            var usuariosGrupo = new UsuariosGrupoViewModel { GrupoID = grupo.GrupoID, Usuarios = miembros, NombreGrupo = grupo.Nombre };
+            return View(usuariosGrupo);
+        }
+
+        [HttpPost("DejarGrupo")]
+        public IActionResult DejarGrupoConfirm(UsuariosGrupoViewModel gvm)
+        {
+            try
+            {
+                var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+                var usuarioGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id).FirstOrDefault();
+                UnitOfWork.UsuarioGrupoRepository.RemoveUsuarioGrupo(usuarioGrupo);
+                UnitOfWork.Complete();
+                return RedirectToAction("Index", "Grupos");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        [HttpGet("ManejoFondos")]
+        public IActionResult ManejoFondos(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }            
+            var usuariosGrupo = new GrupoViewModel { GrupoID = grupo.GrupoID, FondoComun = grupo.FondoComun };
+            return View(usuariosGrupo);
+        }
+
+        [HttpPost("ManejoFondos")]
+        public IActionResult ManejoFondos(GrupoViewModel gvm)
+        {
+            try
+            {
+                var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+                if(gvm.monto == 0)
+                {
+                    return Json(new { mensaje = "Formato invalido o monto = 0" });
+                }
+                else if(gvm.monto > 0)
+                {
+                    grupo.FondoComun.Monto += gvm.monto;
+                    UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
+                    UnitOfWork.Complete();
+                    return Json(new { mensaje = "Se agrego $" + gvm.monto + " al fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                }
+                else
+                {
+                    if((grupo.FondoComun.Monto + gvm.monto) > 0)
+                    { 
+                        grupo.FondoComun.Monto += gvm.monto;
+                        UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
+                        UnitOfWork.Complete();
+                        return Json(new { mensaje = "Se saco $" + gvm.monto*-1 + " del fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                    }
+                    else
+                    {
+                        return Json(new { mensaje = "El monto de un grupo no puede ser menor a $0"});
+                    }
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        [HttpGet("ListaEncuestas")]
+        public IActionResult ListaEncuestas()
+        {
+            return Json("wip");
+        }
+
+        [HttpGet("CrearEncuesta")]
+        public IActionResult CrearEncuesta(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }            
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID};
+            return View(grupoVM);
+        }
+
+        [HttpPost("CrearEncuesta")]
+        public IActionResult CrearEncuesta(GrupoViewModel gvm)
+        {
+            var encuesta = new Encuesta{Pregunta = gvm.Encuesta.Pregunta, Opciones = gvm.Encuesta.Opciones};
+            var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            grupo.Encuestas.Add(encuesta);
+            UnitOfWork.EncuestaRepository.Add(encuesta);
+            UnitOfWork.Complete();
+            return Json(new {mensaje = "putos putos putos"});
         }
     }
 }

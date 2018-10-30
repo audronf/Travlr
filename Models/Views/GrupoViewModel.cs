@@ -12,6 +12,9 @@ namespace Travlr.Models.Views
         public virtual ICollection<FechaDisponibilidad> FechasDisponibilidad { get; set; }
         public virtual ICollection<UsuarioGrupo> UsuarioGrupos { get; set; }
         public Usuario Administrador { get; set; }
-
+        public float monto { get; set; }
+        public Encuesta Encuesta { get; set; }
+        public Actividad Actividad { get; set; }
+        public FechaDisponibilidad FechaDisponibilidad { get; set; }
     }
 }

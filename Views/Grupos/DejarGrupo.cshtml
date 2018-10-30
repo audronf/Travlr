@@ -1,0 +1,28 @@
+@model Travlr.Models.Views.UsuariosGrupoViewModel
+
+@{
+}
+
+@using (Html.BeginForm("DejarGrupoConfirm", "Grupos", FormMethod.Post)){
+<h2>Salirse</h2>
+<div>
+    <h4>Grupo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <span>@Html.HiddenFor(model => model.GrupoID)</span>
+        <dt>
+            @Html.DisplayNameFor(model => model.NombreGrupo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NombreGrupo)
+        </dd>
+    </dl>
+</div>
+<div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Salirse" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}

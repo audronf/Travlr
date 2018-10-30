@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Travlr.Models.Views.GrupoViewModel>
+
 @{
 }
 
@@ -18,11 +19,12 @@
                 @Html.DisplayFor(modelItem => item.Nombre)
             </td>
             <td>
-                <a asp-action="Detalles" asp-route-id="@item.GrupoID">Chau percu</a> |
-                <a asp-action="Salir" asp-route-id="@item.GrupoID">Salir pero de nazi</a> 
+                <a asp-action="Detalles" asp-route-id="@item.GrupoID">Detalles</a> |
+                <a asp-action="DejarGrupo" asp-route-id="@item.GrupoID">Me voy al carajo pelotudos</a> |
+                <a asp-action="ManejoFondos" asp-route-id="@item.GrupoID">Manejo fiscal</a> |
+                <a asp-action="CrearEncuesta" asp-route-id="@item.GrupoID">Encuestas</a>
             </td>
         </tr>
 }
-
     </tbody>
 </table>

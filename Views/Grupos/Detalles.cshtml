@@ -1,0 +1,26 @@
+@model Travlr.Models.Views.UsuariosGrupoViewModel
+
+@{
+}
+
+<h1>Grupo</h1>
+
+<table class="table">
+    <thead>
+    <dl >
+        <h3>
+            @Html.DisplayFor(model => model.NombreGrupo)
+        </h3>
+    </dl>
+    </thead>
+    <tbody> 
+        <p>Integrantes:</p>
+    @foreach (var item in Model.Usuarios) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NickName)
+            </td>
+        </tr>
+}
+</tbody>
+</table>
