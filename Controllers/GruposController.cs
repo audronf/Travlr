@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Travlr.Repositories.Database;
 using System.Collections.Generic;
+using System;
 
 namespace Travlr.Controllers
 {
@@ -94,10 +95,10 @@ namespace Travlr.Controllers
 
         /*Eliminado fisico de grupo */
         [HttpGet("Eliminar")]
-        public IActionResult Eliminar(int id){
-            var grupo=UnitOfWork.GrupoRepository.Get(id);
+        public IActionResult Eliminar(GrupoViewModel gvm){
+            var grupo=UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
             if(grupo == null){
-                return Json(new {mensaje="El id "+id+" no existe"});
+                return Json(new {mensaje="El id "+gvm.GrupoID+" no existe"});
             }                        
             UnitOfWork.GrupoRepository.Remove(grupo);
             return Json(new{mensaje="Se ha eliminado el grupo correctamente"});
@@ -210,6 +211,7 @@ namespace Travlr.Controllers
         [HttpGet("ListaEncuestas")]
         public IActionResult ListaEncuestas()
         {
+            var encuestas = UnitOfWork.EncuestaRepository.GetAll().ToList();
             return Json("wip");
         }
 
@@ -228,12 +230,39 @@ namespace Travlr.Controllers
         [HttpPost("CrearEncuesta")]
         public IActionResult CrearEncuesta(GrupoViewModel gvm)
         {
-            var encuesta = new Encuesta{Pregunta = gvm.Encuesta.Pregunta, Opciones = gvm.Encuesta.Opciones};
+            var opcionesEncuesta = string.Empty;
+            foreach(var opcion in gvm.Opciones)
+            {
+                opcionesEncuesta += opcion;
+                opcionesEncuesta += "~";
+            }
+            opcionesEncuesta.TrimEnd('~');
+            var encuesta = new Encuesta{Pregunta = gvm.Encuesta.Pregunta, Opciones = opcionesEncuesta};
             var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
             grupo.Encuestas.Add(encuesta);
             UnitOfWork.EncuestaRepository.Add(encuesta);
+            //test esto a ver que pasa si solo se hace uno o los doy vuelta
+            UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
-            return Json(new {mensaje = "putos putos putos"});
+            return Json(new {mensaje = "wip"});
+        }
+
+        [HttpGet("ListaActividades")]
+        public IActionResult ListaActividades()
+        { 
+            return View();
+        }
+        
+        [HttpGet("CrearActividad")]
+        public IActionResult CrearActividad(int id)
+        {
+            return Json("wip");     
+        }
+
+        [HttpPost("CrearActividad")]
+        public IActionResult CrearActividad(GrupoViewModel gvm)
+        {
+            return Json("wip");
         }
     }
 }

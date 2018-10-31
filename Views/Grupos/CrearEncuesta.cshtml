@@ -8,11 +8,18 @@
  <form asp-action="CrearEncuesta" method="POST">
     <span>@Html.HiddenFor(model => model.GrupoID)</span>
     <div class="form-horizontal">
-        <label>Comment: </label>
-        <input type= "text" id="comment-text" name="comment-text" value="" class="form-control"/>
+        <label>Pregunta: </label>
+        @Html.TextAreaFor(m => m.Encuesta.Pregunta, new { @class = "form-control" })  
         <br />
         <label>Rate: </label>
-        <input type= "text" id="comment-rating" name="comment-rate" value="" class="form-control"/>
+        @Html.DropDownList("Test", 
+                    new List<SelectListItem>{
+                        new SelectListItem{ Text="cuba", Value="1"},
+                        new SelectListItem{ Text="peru", Value="0"},
+                        new SelectListItem{ Text="chile", Value="2"}
+                        },
+                    "Opcioncitas",
+                    new { @class = "form-control" })
         <br />
         <button id = "btn-add-comment"  class="btn btn-primary btn-sm" >Add Comment</button>
     </div>

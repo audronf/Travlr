@@ -14,6 +14,7 @@ namespace Travlr.Models.Views
         public Usuario Administrador { get; set; }
         public float monto { get; set; }
         public Encuesta Encuesta { get; set; }
+        public List<string> Opciones { get; set; }
         public Actividad Actividad { get; set; }
         public FechaDisponibilidad FechaDisponibilidad { get; set; }
     }
