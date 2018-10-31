@@ -95,14 +95,16 @@ namespace Travlr.Controllers
 
         /*Eliminado fisico de grupo */
         [HttpGet("Eliminar")]
-        public IActionResult Eliminar(GrupoViewModel gvm){
-            var grupo=UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
-            if(grupo == null){
-                return Json(new {mensaje="El id "+gvm.GrupoID+" no existe"});
-            }                        
+        public IActionResult Eliminar(GrupoViewModel gvm)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            if (grupo == null)
+            {
+                return Json(new { mensaje = "El id " + gvm.GrupoID + " no existe" });
+            }
             UnitOfWork.GrupoRepository.Remove(grupo);
-            return Json(new{mensaje="Se ha eliminado el grupo correctamente"});
-        }       
+            return Json(new { mensaje = "Se ha eliminado el grupo correctamente" });
+        }
 
         [HttpGet("Detalles")]
         public IActionResult Detalles(int id)
@@ -165,7 +167,7 @@ namespace Travlr.Controllers
             if (grupo == null)
             {
                 return NotFound();
-            }            
+            }
             var usuariosGrupo = new GrupoViewModel { GrupoID = grupo.GrupoID, FondoComun = grupo.FondoComun };
             return View(usuariosGrupo);
         }
@@ -176,11 +178,11 @@ namespace Travlr.Controllers
             try
             {
                 var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
-                if(gvm.monto == 0)
+                if (gvm.monto == 0)
                 {
                     return Json(new { mensaje = "Formato invalido o monto = 0" });
                 }
-                else if(gvm.monto > 0)
+                else if (gvm.monto > 0)
                 {
                     grupo.FondoComun.Monto += gvm.monto;
                     UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
@@ -189,16 +191,16 @@ namespace Travlr.Controllers
                 }
                 else
                 {
-                    if((grupo.FondoComun.Monto + gvm.monto) > 0)
-                    { 
+                    if ((grupo.FondoComun.Monto + gvm.monto) > 0)
+                    {
                         grupo.FondoComun.Monto += gvm.monto;
                         UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
                         UnitOfWork.Complete();
-                        return Json(new { mensaje = "Se saco $" + gvm.monto*-1 + " del fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                        return Json(new { mensaje = "Se saco $" + gvm.monto * -1 + " del fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
                     }
                     else
                     {
-                        return Json(new { mensaje = "El monto de un grupo no puede ser menor a $0"});
+                        return Json(new { mensaje = "El monto de un grupo no puede ser menor a $0" });
                     }
                 }
             }
@@ -222,47 +224,68 @@ namespace Travlr.Controllers
             if (grupo == null)
             {
                 return NotFound();
-            }            
-            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID};
+            }
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID };
             return View(grupoVM);
         }
 
         [HttpPost("CrearEncuesta")]
         public IActionResult CrearEncuesta(GrupoViewModel gvm)
         {
+            var test = new List<string>();
+            test.Add("cuba");
+            test.Add("chile");
+            test.Add("Peru");
             var opcionesEncuesta = string.Empty;
-            foreach(var opcion in gvm.Opciones)
+            foreach (var opcion in test)
             {
                 opcionesEncuesta += opcion;
                 opcionesEncuesta += "~";
             }
             opcionesEncuesta.TrimEnd('~');
-            var encuesta = new Encuesta{Pregunta = gvm.Encuesta.Pregunta, Opciones = opcionesEncuesta};
-            var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            var encuesta = new Encuesta { Pregunta = gvm.Encuesta.Pregunta, Opciones = opcionesEncuesta };
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            if (grupo.Encuestas == null)
+            {
+                grupo.Encuestas = new List<Encuesta>();
+            }
             grupo.Encuestas.Add(encuesta);
-            UnitOfWork.EncuestaRepository.Add(encuesta);
-            //test esto a ver que pasa si solo se hace uno o los doy vuelta
             UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
-            return Json(new {mensaje = "wip"});
+            return Json(new { mensaje = "wip" });
         }
 
         [HttpGet("ListaActividades")]
         public IActionResult ListaActividades()
-        { 
+        {
             return View();
         }
-        
+
         [HttpGet("CrearActividad")]
         public IActionResult CrearActividad(int id)
         {
-            return Json("wip");     
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID };
+            return View(grupoVM);
         }
 
         [HttpPost("CrearActividad")]
         public IActionResult CrearActividad(GrupoViewModel gvm)
         {
-            return Json("wip");
+            var actividad = new Actividad { Descripcion = gvm.Actividad.Descripcion, FechaHora = DateTime.Today };
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            if (grupo.Actividades == null)
+            {
+                grupo.Actividades = new List<Actividad>();
+            }
+            grupo.Actividades.Add(actividad);
+            UnitOfWork.GrupoRepository.Update(grupo);
+            UnitOfWork.Complete();
+            return Json("uwuuu");
         }
     }
 }

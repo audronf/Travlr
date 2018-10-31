@@ -13,7 +13,7 @@ namespace Repositories
         public DbContext DbContext{ get { return Context as DbContext; } }
         public Grupo GetPeroCompleto(int cod)
         {
-            var grupo = Context.Set<Grupo>().Include(x => x.FondoComun).Where(gr => gr.GrupoID == cod).FirstOrDefault();
+            var grupo = Context.Set<Grupo>().Include(x => x.FondoComun).Include(x => x.Encuestas).Include(x => x.Actividades).Where(gr => gr.GrupoID == cod).FirstOrDefault();
             return grupo;
         }
     }
