@@ -160,7 +160,6 @@ namespace Travlr.Controllers
             }
         }
 
-        [HttpGet("ManejoFondos")]
         public IActionResult ManejoFondos(int id)
         {
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
@@ -232,12 +231,12 @@ namespace Travlr.Controllers
         [HttpPost("CrearEncuesta")]
         public IActionResult CrearEncuesta(GrupoViewModel gvm)
         {
-            var test = new List<string>();
-            test.Add("cuba");
-            test.Add("chile");
-            test.Add("Peru");
+            // var test = new List<string>();
+            // test.Add("cuba");
+            // test.Add("chile");
+            // test.Add("Peru");
             var opcionesEncuesta = string.Empty;
-            foreach (var opcion in test)
+            foreach (var opcion in gvm.Opciones)
             {
                 opcionesEncuesta += opcion;
                 opcionesEncuesta += "~";
@@ -252,7 +251,7 @@ namespace Travlr.Controllers
             grupo.Encuestas.Add(encuesta);
             UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
-            return Json(new { mensaje = "wip" });
+            return Json(new { mensaje = "esto funciona" });
         }
 
         [HttpGet("ListaActividades")]
@@ -285,7 +284,35 @@ namespace Travlr.Controllers
             grupo.Actividades.Add(actividad);
             UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
-            return Json("uwuuu");
+            return Json("esto funciona");
+        }
+
+        [HttpGet("FechasDisponibilidad")]
+        public IActionResult FechasDisponibilidad(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID };
+            return View(grupoVM);
+        }
+        
+        [HttpPost("FechasDisponibilidad")]
+        public IActionResult FechasDisponibilidad(GrupoViewModel gvm)
+        {
+            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var fechaDisp = new FechaDisponibilidad{UsuarioId = logged.Id, FechaInicio = DateTime.Now.AddDays(4),FechaFin = DateTime.Now.AddDays(10)};
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            if (grupo.FechasDisponibilidad == null)
+            {
+                grupo.FechasDisponibilidad = new List<FechaDisponibilidad>();
+            }
+            grupo.FechasDisponibilidad.Add(fechaDisp);
+            UnitOfWork.GrupoRepository.Update(grupo);
+            UnitOfWork.Complete();
+            return Json("esto funciona");
         }
     }
 }

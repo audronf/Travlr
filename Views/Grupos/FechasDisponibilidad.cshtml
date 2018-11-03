@@ -1,0 +1,13 @@
+@model Travlr.Models.Views.GrupoViewModel
+
+@{
+}
+
+<h2>Fechas desponebeledaaaaaaaaaaaaaaaaaaaaaaad</h2>
+
+ <form asp-action="FechasDisponibilidad" method="POST">
+    <span>@Html.HiddenFor(model => model.GrupoID)</span>
+    <div class="form-horizontal">
+        <button id = "btn-add-fecha"  class="btn btn-primary btn-sm" >Add fecha</button>
+    </div>
+</form> 

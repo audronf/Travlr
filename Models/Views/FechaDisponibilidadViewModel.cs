@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Travlr.Models
 {
-    public class FechaDisponibilidad
+    public class FechaDisponibilidadViewModel
     {
         public int ID { get; set; }
-        public string UsuarioId { get; set; }
+        public virtual Usuario Usuario { get; set; }
 
         [Display(Name = "Release Date")]
         [DataType(DataType.Date)]
