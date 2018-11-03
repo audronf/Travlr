@@ -160,6 +160,7 @@ namespace Travlr.Controllers
             }
         }
 
+        [HttpGet("ManejoFondos")]
         public IActionResult ManejoFondos(int id)
         {
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
@@ -231,17 +232,13 @@ namespace Travlr.Controllers
         [HttpPost("CrearEncuesta")]
         public IActionResult CrearEncuesta(GrupoViewModel gvm)
         {
-            // var test = new List<string>();
-            // test.Add("cuba");
-            // test.Add("chile");
-            // test.Add("Peru");
             var opcionesEncuesta = string.Empty;
             foreach (var opcion in gvm.Opciones)
             {
                 opcionesEncuesta += opcion;
                 opcionesEncuesta += "~";
             }
-            opcionesEncuesta.TrimEnd('~');
+            opcionesEncuesta.TrimEnd();
             var encuesta = new Encuesta { Pregunta = gvm.Encuesta.Pregunta, Opciones = opcionesEncuesta };
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
             if (grupo.Encuestas == null)

@@ -6,8 +6,9 @@ namespace Travlr.Models.Views
 {
     public class LoginViewModel
     {
-        [Required]
         public string Nombre { get; set; }
+
+        public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

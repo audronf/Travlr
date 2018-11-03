@@ -10,83 +10,78 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-
 using Travlr.Models.Views;
+using Microsoft.Extensions.Configuration;
+using Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AssignmentsNetcore.Helpers;
+using Newtonsoft.Json;
 
-namespace MvcMovie.Controllers
+namespace Travlr.Controllers
 {
     [Route("api/v1/[controller]")]
     public class AccountApiController : Controller
     {
-        private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
-
-        public AccountApiController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
+        private readonly UserManager<Usuario> _userManager;
+        private readonly IConfiguration _configuration;
+        private readonly IUnitOfWork _unitOfWork;
+        public AccountApiController(UserManager<Usuario> userManager,
+                                    SignInManager<Usuario> signInManager,
+                                    IUnitOfWork unitOfWork,
+                                    IConfiguration configuration)
         {
             this._userManager = userManager;
             this._signInManager = signInManager;
+            this._configuration = configuration;
+            this._unitOfWork = unitOfWork;
         }
 
-        public SignInManager<Usuario> SignInManager
-        {
-            get { return this._signInManager; }
-        }
+        public UserManager<Usuario> UserManager { get => this._userManager; }
+        public SignInManager<Usuario> SignInManager { get => this._signInManager; }
+        public IConfiguration Configuration { get => this._configuration; }
+        public IUnitOfWork UnitOfWork { get => this._unitOfWork; }
 
-        public UserManager<Usuario> UserManager
+        [HttpPost("SignIn")]
+        public async Task<object> SignIn([FromBody] LoginViewModel loginViewModel)
         {
-            get { return this._userManager; }
-        }
-
-        [AllowAnonymous]
-        [HttpGet("Register")]
-        public IActionResult Register() => View();
-
-        [AllowAnonymous]
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register(UsuarioViewModel userViewModel)
-        {
-            if (ModelState.IsValid)
+            var result = await SignInManager.PasswordSignInAsync(loginViewModel.Nombre, loginViewModel.Password, loginViewModel.RememberMe, false);
+            object response;
+            if (result.Succeeded)
             {
-                var user = new Usuario { UserName = userViewModel.Nombre, Email = userViewModel.Email, NickName=userViewModel.NickName };
-                var result = await UserManager.CreateAsync(user, userViewModel.Password);
-                if (result.Succeeded)
+                var appUser = UserManager.Users.SingleOrDefault(r => r.Email == loginViewModel.Email);
+                Response.StatusCode = StatusCodes.Status200OK;
+                var configVariables = new Dictionary<string, string>
                 {
-                    await SignInManager.SignInAsync(user, true);
-                    return RedirectToAction("Index", "Grupos");
-                }
-                else foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+                    { "key", Configuration["Jwt:Key"] },
+                    { "expire", Configuration["Jwt:ExpireDays"] },
+                    { "issuer", Configuration["Jwt:Issuer"] },
+                };
+                response = new { Token = AccountHelper.GenerateJwtToken(loginViewModel.Email, appUser, configVariables) };
             }
-            return View(userViewModel);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("Login")]
-        public async Task<IActionResult> Login()
-        {
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            var viewModel = new LoginViewModel();
-            return View(viewModel);
-        }
-
-        [AllowAnonymous]
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
-        {
-            if (ModelState.IsValid)
+            else if (result.IsNotAllowed)
             {
-                var result = await SignInManager.PasswordSignInAsync(loginViewModel.Nombre, loginViewModel.Password, loginViewModel.RememberMe, false);
-                if (result.Succeeded) return RedirectToAction("Index", "Grupos");
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                Response.StatusCode = StatusCodes.Status401Unauthorized;
+                response = new { Message = "Error, no autorizado" };
             }
-            return View(loginViewModel);
+            else
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                if (string.IsNullOrEmpty(loginViewModel.Email) || string.IsNullOrEmpty(loginViewModel.Password))
+                    response = new { Message = "Faltan datos" };
+                else
+                    response = new { Message = "El registro fallo" };
+            }
+            return Json(response);
         }
 
-        [HttpPost("Logout")]
-        public async Task<IActionResult> Logout()
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("Me")]
+        public async Task<IActionResult> Me()
         {
-            await SignInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+            return Json(await UserManager.FindByNameAsync(User.Identity.Name));
         }
-
     }
 }
