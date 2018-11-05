@@ -3,10 +3,12 @@ using Travlr.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System;
 
 namespace Travlr.Controllers
 {
-    [Route("[controller]")]
+    [Route("/Grupos/[controller]")]
     [Authorize]
 
     public class ActividadesController : Controller
@@ -17,28 +19,38 @@ namespace Travlr.Controllers
         {
             this._unitOfWork = unitOfWork;
         }
-        public IActionResult Index()
+        [HttpGet("ListaActividades")]
+        public IActionResult ListaActividades()
         {
             return View();
         }
 
-        [HttpGet("actividad")]
-        public IActionResult Create()
+        [HttpGet("CrearActividad")]
+        public IActionResult CrearActividad(int id)
         {
-            return View();
-        }
-
-        [HttpPost("actividad")]
-        public IActionResult Create(ActividadViewModel avm)
-        {
-            if (ModelState.IsValid)
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
             {
-                var actividad = new Actividad { Descripcion = avm.Descripcion, FechaHora = avm.FechaHora};
-                UnitOfWork.ActividadRepository.Add(actividad);
-                UnitOfWork.Complete();
+                return NotFound();
             }
-            return RedirectToAction("Index", "Actividades");
-        }    
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID };
+            return View(grupoVM);
+        }
+
+        [HttpPost("CrearActividad")]
+        public IActionResult CrearActividad(GrupoViewModel gvm)
+        {
+            var actividad = new Actividad { Descripcion = gvm.Actividad.Descripcion, FechaHora = DateTime.Today };
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            if (grupo.Actividades == null)
+            {
+                grupo.Actividades = new List<Actividad>();
+            }
+            grupo.Actividades.Add(actividad);
+            UnitOfWork.GrupoRepository.Update(grupo);
+            UnitOfWork.Complete();
+            return Json("esto funciona");
+        }
 
     }
 }
