@@ -10,8 +10,8 @@ using Travlr.Repositories.Database;
 namespace Travlr.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20181105141314_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20181105212208_YaNoSeQuePonerleMigration")]
+    partial class YaNoSeQuePonerleMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -146,14 +146,30 @@ namespace Travlr.Migrations
                     b.ToTable("Actividades");
                 });
 
+            modelBuilder.Entity("Travlr.Models.ActividadConfirmado", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ActividadID");
+
+                    b.Property<bool>("Asiste");
+
+                    b.Property<string>("UsuarioId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ActividadID");
+
+                    b.ToTable("ActividadConfirmado");
+                });
+
             modelBuilder.Entity("Travlr.Models.Encuesta", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int?>("GrupoID");
-
-                    b.Property<string>("Opciones");
 
                     b.Property<string>("Pregunta");
 
@@ -216,14 +232,30 @@ namespace Travlr.Migrations
                     b.ToTable("Grupos");
                 });
 
+            modelBuilder.Entity("Travlr.Models.Opcion", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Cantidad");
+
+                    b.Property<int?>("EncuestaID");
+
+                    b.Property<string>("Texto");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EncuestaID");
+
+                    b.ToTable("Opciones");
+                });
+
             modelBuilder.Entity("Travlr.Models.Usuario", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
-
-                    b.Property<int?>("ActividadID");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -232,8 +264,6 @@ namespace Travlr.Migrations
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
-
-                    b.Property<int?>("EncuestaID");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -266,10 +296,6 @@ namespace Travlr.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActividadID");
-
-                    b.HasIndex("EncuestaID");
-
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -291,6 +317,24 @@ namespace Travlr.Migrations
                     b.HasIndex("GrupoID");
 
                     b.ToTable("UsuarioGrupo");
+                });
+
+            modelBuilder.Entity("Travlr.Models.Votaron", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("EncuestaID");
+
+                    b.Property<string>("UsuarioId");
+
+                    b.Property<bool>("Voto");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EncuestaID");
+
+                    b.ToTable("Votaron");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -345,6 +389,13 @@ namespace Travlr.Migrations
                         .HasForeignKey("GrupoID");
                 });
 
+            modelBuilder.Entity("Travlr.Models.ActividadConfirmado", b =>
+                {
+                    b.HasOne("Travlr.Models.Actividad")
+                        .WithMany("Confirmados")
+                        .HasForeignKey("ActividadID");
+                });
+
             modelBuilder.Entity("Travlr.Models.Encuesta", b =>
                 {
                     b.HasOne("Travlr.Models.Grupo")
@@ -370,14 +421,10 @@ namespace Travlr.Migrations
                         .HasForeignKey("FondoComunID");
                 });
 
-            modelBuilder.Entity("Travlr.Models.Usuario", b =>
+            modelBuilder.Entity("Travlr.Models.Opcion", b =>
                 {
-                    b.HasOne("Travlr.Models.Actividad")
-                        .WithMany("Confirmados")
-                        .HasForeignKey("ActividadID");
-
                     b.HasOne("Travlr.Models.Encuesta")
-                        .WithMany("Votaron")
+                        .WithMany("Opciones")
                         .HasForeignKey("EncuestaID");
                 });
 
@@ -392,6 +439,13 @@ namespace Travlr.Migrations
                         .WithMany("UsuarioGrupos")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Travlr.Models.Votaron", b =>
+                {
+                    b.HasOne("Travlr.Models.Encuesta")
+                        .WithMany("Votaron")
+                        .HasForeignKey("EncuestaID");
                 });
 #pragma warning restore 612, 618
         }

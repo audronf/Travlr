@@ -8,6 +8,6 @@ namespace Travlr.Models
         public int ID { get; set; }
         public string Descripcion { get; set; }
         public DateTime FechaHora { get; set; }
-        public virtual ICollection<Usuario> Confirmados { get; set; }
+        public virtual ICollection<ActividadConfirmado> Confirmados { get; set; }
     }
 }

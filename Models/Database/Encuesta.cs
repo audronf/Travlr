@@ -7,8 +7,7 @@ namespace Travlr.Models
     {
         public int ID { get; set; }
         public string Pregunta { get; set; }
-        public string Opciones { get; set; }
-        public virtual ICollection<Usuario> Votaron { get; set; }
-
+        public virtual ICollection<Opcion> Opciones { get; set; }
+        public virtual ICollection<Votaron> Votaron { get; set; }
     }
 }

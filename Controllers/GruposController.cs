@@ -211,10 +211,19 @@ namespace Travlr.Controllers
         }
 
         [HttpGet("ListaEncuestas")]
+        //wip
         public IActionResult ListaEncuestas()
         {
             var encuestas = UnitOfWork.EncuestaRepository.GetAll().ToList();
-            return Json("wip");
+            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var grupos = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(u => u.UsuarioId == logged.Id);
+            List<Grupo> gruposUsuario = new List<Grupo>();
+            foreach (var grupo in grupos)
+            {
+                gruposUsuario.Add(UnitOfWork.GrupoRepository.Get(grupo.GrupoID));
+            }
+            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre }));
+
         }
 
         [HttpGet("CrearEncuesta")]
@@ -232,15 +241,26 @@ namespace Travlr.Controllers
         [HttpPost("CrearEncuesta")]
         public IActionResult CrearEncuesta(GrupoViewModel gvm)
         {
-            var opcionesEncuesta = string.Empty;
-            foreach (var opcion in gvm.Opciones)
-            {
-                opcionesEncuesta += opcion;
-                opcionesEncuesta += "~";
-            }
-            opcionesEncuesta.TrimEnd();
-            var encuesta = new Encuesta { Pregunta = gvm.Encuesta.Pregunta, Opciones = opcionesEncuesta };
+            var text = new List<string>();
+            text.Add("cuba");
+            text.Add("Paris");
+
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            var encuesta = new Encuesta { Pregunta = gvm.Encuesta.Pregunta};
+            var votacion = new List<Votaron>();
+            foreach(var usuario in grupo.UsuarioGrupos.Where(u => u.GrupoID == grupo.GrupoID))
+            {
+                var vt = new Votaron { UsuarioId = usuario.UsuarioId, Voto = false};
+                votacion.Add(vt);
+            }
+            var OpcionesList = new List<Opcion>();
+            foreach(var opcion in gvm.Opciones)
+            {
+                var op = new Opcion { Texto = opcion, Cantidad = 0};
+                OpcionesList.Add(op);
+            }
+            encuesta.Opciones = OpcionesList;
+            encuesta.Votaron = votacion;
             if (grupo.Encuestas == null)
             {
                 grupo.Encuestas = new List<Encuesta>();
@@ -248,7 +268,7 @@ namespace Travlr.Controllers
             grupo.Encuestas.Add(encuesta);
             UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
-            return Json(new { mensaje = "esto funciona" });
+            return Json(new { mensaje = "exito!!!!!!!!!!!!" });
         }
 
         [HttpGet("ListaActividades")]
@@ -310,6 +330,28 @@ namespace Travlr.Controllers
             UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
             return Json("esto funciona");
+        }
+
+        [HttpGet("VotarEncuesta")]
+        public IActionResult VotarEncuesta(int idEncuesta, int idGrupo)
+        {
+            return View();
+
+        }
+
+        [HttpPost("VotarEncuesta")]
+        public IActionResult VotarEncuesta(GrupoViewModel gvm)
+        {
+            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var encuesta = UnitOfWork.EncuestaRepository.GetPeroCompleto(gvm.Encuesta.ID);
+            // if(encuesta.Votaron == null)
+            // {
+            //     encuesta.Votaron = new List<Usuario>();
+            // }
+            // encuesta.Votaron.Add(logged);
+            UnitOfWork.EncuestaRepository.Update(encuesta);
+            UnitOfWork.Complete();
+            return Json("votaste!!!!");
         }
     }
 }

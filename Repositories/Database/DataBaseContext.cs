@@ -14,6 +14,8 @@ namespace Travlr.Repositories.Database
         public DbSet<FondoComun> FondosComunes { get; set; }
         public DbSet<Grupo> Grupos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Opcion> Opciones { get; set; }
+        public DbSet<Votaron> Votaron { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UsuarioGrupo>()

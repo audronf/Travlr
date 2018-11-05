@@ -4,7 +4,6 @@ namespace Travlr.Models
     {
         public int ID { get; set; }
         public float Monto { get; set; }
-
         
     }
 }

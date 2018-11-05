@@ -9,6 +9,7 @@ namespace Repositories.Interfaces
         IFondoComunRepository FondoComunRepository { get; }
         IGrupoRepository GrupoRepository { get; }
         IUsuarioGrupoRepository UsuarioGrupoRepository { get; }
+        IOpcionRepository OpcionRepository { get; }
         int Complete();
     }
 }

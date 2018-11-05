@@ -51,7 +51,7 @@ namespace Travlr.Controllers
             object response;
             if (result.Succeeded)
             {
-                var appUser = UserManager.Users.SingleOrDefault(r => r.Nombre == loginViewModel.Nombre);
+                var appUser = UserManager.Users.SingleOrDefault(r => r.Email == loginViewModel.Email);
                 Response.StatusCode = StatusCodes.Status200OK;
                 var configVariables = new Dictionary<string, string>
                 {

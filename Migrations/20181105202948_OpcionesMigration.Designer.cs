@@ -10,8 +10,8 @@ using Travlr.Repositories.Database;
 namespace Travlr.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20181105141314_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20181105202948_OpcionesMigration")]
+    partial class OpcionesMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -153,8 +153,6 @@ namespace Travlr.Migrations
 
                     b.Property<int?>("GrupoID");
 
-                    b.Property<string>("Opciones");
-
                     b.Property<string>("Pregunta");
 
                     b.HasKey("ID");
@@ -214,6 +212,24 @@ namespace Travlr.Migrations
                     b.HasIndex("FondoComunID");
 
                     b.ToTable("Grupos");
+                });
+
+            modelBuilder.Entity("Travlr.Models.Opcion", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Cantidad");
+
+                    b.Property<int?>("EncuestaID");
+
+                    b.Property<string>("Texto");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EncuestaID");
+
+                    b.ToTable("Opcion");
                 });
 
             modelBuilder.Entity("Travlr.Models.Usuario", b =>
@@ -368,6 +384,13 @@ namespace Travlr.Migrations
                     b.HasOne("Travlr.Models.FondoComun", "FondoComun")
                         .WithMany()
                         .HasForeignKey("FondoComunID");
+                });
+
+            modelBuilder.Entity("Travlr.Models.Opcion", b =>
+                {
+                    b.HasOne("Travlr.Models.Encuesta")
+                        .WithMany("Opciones")
+                        .HasForeignKey("EncuestaID");
                 });
 
             modelBuilder.Entity("Travlr.Models.Usuario", b =>
