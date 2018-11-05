@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Travlr.Migrations
+namespace Funtrip.Migrations
 {
     public partial class InitialCreate : Migration
     {
@@ -76,7 +76,8 @@ namespace Travlr.Migrations
                     Id = table.Column<string>(nullable: false),
                     Nombre = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),                    
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NickName = table.Column<string>(nullable: true),
                     ActividadID = table.Column<int>(nullable: true),
                     EncuestaID = table.Column<int>(nullable: true)
                 },
@@ -176,8 +177,9 @@ namespace Travlr.Migrations
                 {
                     GrupoID = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    FondoComunID = table.Column<int>(nullable: true),
-                    AdministradorId = table.Column<string>(nullable: true)
+                    AdministradorId = table.Column<string>(nullable: true),
+                    Nombre = table.Column<string>(nullable: true),
+                    FondoComunID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -258,24 +260,18 @@ namespace Travlr.Migrations
                         principalTable: "Grupos",
                         principalColumn: "GrupoID",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_FechasDisponibilidad_AspNetUsers_UsuarioId",
-                        column: x => x.UsuarioId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UsuarioGrupo",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
+                    UsuarioId = table.Column<string>(nullable: false),
                     GrupoID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsuarioGrupo", x => new { x.Id, x.GrupoID });
+                    table.PrimaryKey("PK_UsuarioGrupo", x => new { x.UsuarioId, x.GrupoID });
                     table.ForeignKey(
                         name: "FK_UsuarioGrupo_Grupos_GrupoID",
                         column: x => x.GrupoID,
@@ -283,8 +279,8 @@ namespace Travlr.Migrations
                         principalColumn: "GrupoID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsuarioGrupo_AspNetUsers_Id",
-                        column: x => x.Id,
+                        name: "FK_UsuarioGrupo_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -351,11 +347,6 @@ namespace Travlr.Migrations
                 name: "IX_FechasDisponibilidad_GrupoID",
                 table: "FechasDisponibilidad",
                 column: "GrupoID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FechasDisponibilidad_UsuarioId",
-                table: "FechasDisponibilidad",
-                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Grupos_AdministradorId",
