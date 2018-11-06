@@ -39,7 +39,7 @@ namespace Travlr
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<DataBaseContext>(options =>  options.UseNpgsql(Configuration["ConnectionString"]));
+            services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(Configuration["ConnectionString"]));
             services.AddScoped<DataBaseContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<DataBaseContext>();
@@ -71,6 +71,13 @@ namespace Travlr
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = Configuration["Authentication:GoogleAuth:ClientId"];
+                googleOptions.ClientSecret = Configuration["Authentication:GoogleAuth:ClientSecret"];
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +97,8 @@ namespace Travlr
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
