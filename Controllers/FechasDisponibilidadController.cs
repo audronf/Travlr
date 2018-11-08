@@ -9,6 +9,7 @@ using Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Travlr.Repositories.Database;
+using System.Linq;
 
 namespace Travlr.Controllers
 {
@@ -43,7 +44,7 @@ namespace Travlr.Controllers
         public IActionResult FechasDisponibilidad(GrupoViewModel gvm)
         {
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-            var fechaDisp = new FechaDisponibilidad { UsuarioId = logged.Id, FechaInicio = DateTime.Now.AddDays(4), FechaFin = DateTime.Now.AddDays(10) };
+            var fechaDisp = new FechaDisponibilidad { UsuarioId = logged.Id, FechaInicio = gvm.FechaDisponibilidad.FechaInicio, FechaFin = gvm.FechaDisponibilidad.FechaFin };
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
             if (grupo.FechasDisponibilidad == null)
             {
@@ -53,6 +54,14 @@ namespace Travlr.Controllers
             UnitOfWork.GrupoRepository.Update(grupo);
             UnitOfWork.Complete();
             return Json("esto funciona");
+        }
+
+        [HttpGet("ListadoFechas")]
+        public IActionResult ListadoFechas(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            var fdvm = grupo.FechasDisponibilidad.Select(fd => new FechaDisponibilidadViewModel{ID = fd.ID, FechaInicio = fd.FechaInicio, FechaFin = fd.FechaFin});
+            return View(fdvm);
         }
     }
 }

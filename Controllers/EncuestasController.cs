@@ -59,10 +59,6 @@ namespace Travlr.Controllers
         [HttpPost("CrearEncuesta")]
         public IActionResult CrearEncuesta(GrupoViewModel gvm)
         {
-            var text = new List<string>();
-            text.Add("cuba");
-            text.Add("Paris");
-
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
             var encuesta = new Encuesta { Pregunta = gvm.Encuesta.Pregunta };
             var votacion = new List<Votaron>();
@@ -72,7 +68,7 @@ namespace Travlr.Controllers
                 votacion.Add(vt);
             }
             var OpcionesList = new List<Opcion>();
-            foreach (var opcion in text)
+            foreach (var opcion in gvm.Opciones)
             {
                 var op = new Opcion { Texto = opcion, Cantidad = 0 };
                 OpcionesList.Add(op);
@@ -96,15 +92,14 @@ namespace Travlr.Controllers
         }
 
         [HttpPost("VotarEncuesta")]
-        public IActionResult VotarEncuesta()
+        public IActionResult VotarEncuesta(GrupoViewModel gvm)
         {
-            var test = new Opcion { ID = 5 };
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-            var encuesta = UnitOfWork.EncuestaRepository.GetPeroCompleto(3);
+            var encuesta = UnitOfWork.EncuestaRepository.GetPeroCompleto(gvm.Encuesta.ID);
             if (encuesta.Votaron.Where(u => u.UsuarioId == logged.Id).FirstOrDefault().Voto == false)
             {
                 encuesta.Votaron.Where(u => u.UsuarioId == logged.Id).FirstOrDefault().Voto = true;
-                encuesta.Opciones.Where(o => o.ID == test.ID).FirstOrDefault().Cantidad++;
+                encuesta.Opciones.Where(o => o.ID == gvm.OpcionSelect /* int del numero de opcion */).FirstOrDefault().Cantidad++;
                 UnitOfWork.EncuestaRepository.Update(encuesta);
                 UnitOfWork.Complete();
             }
