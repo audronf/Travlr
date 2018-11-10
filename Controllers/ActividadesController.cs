@@ -25,6 +25,7 @@ namespace Travlr.Controllers
         public ActividadesController(DbContextOptions<DataBaseContext> options, UserManager<Usuario> userManager, IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;
+            this._userRepository = new UsuarioRepository(options, userManager);
         }
         [HttpGet("ListaActividades")]
         public IActionResult ListaActividades()

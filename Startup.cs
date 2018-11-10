@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Cors;
 using Travlr.Repositories.Database;
 using Repositories.Interfaces;
 using Persistence;
@@ -108,6 +109,11 @@ namespace Travlr
                 app.UseHsts();
             }
 
+            app.UseCors(builder => builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials());  
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
