@@ -19,6 +19,10 @@ namespace Travlr
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((buildercontext, config) =>
+                {
+                    config.AddJsonFile("settings/appsettings.docker.json", optional: true);
+                })
                 .UseStartup<Startup>();
     }
 }
