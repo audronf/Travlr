@@ -26,6 +26,8 @@ namespace Travlr.Controllers
             this._unitOfWork = unitOfWork;
             this._userRepository = new UsuarioRepository(options, userManager);
         }
+
+        [HttpGet("")]
         public IActionResult Index()
         {
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;

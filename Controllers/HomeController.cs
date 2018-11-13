@@ -10,12 +10,14 @@ namespace Travlr.Controllers
 {
     public class HomeController : Controller
     {
+        [HttpGet("")]
         public IActionResult Index()
         {
             return RedirectToAction("Index","Grupos");
         }
         
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpGet("Error")]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

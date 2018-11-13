@@ -19,6 +19,7 @@ using Travlr.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Travlr
 {
@@ -39,6 +40,12 @@ namespace Travlr
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+             services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info { Title = "Travlr API", Version = "v1" });
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization", Type = "apiKey" });
+                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> { { "Bearer", Enumerable.Empty<string>() } });
             });
             services.AddCors();
             services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore).SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddViewLocalization();
@@ -123,6 +130,11 @@ namespace Travlr
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Travlr API V1");
             });
         }
     }

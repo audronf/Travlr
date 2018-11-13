@@ -27,6 +27,7 @@ namespace Travlr.Controllers
             this._unitOfWork = unitOfWork;
             this._userRepository = new UsuarioRepository(options, userManager);
         }
+        
         [HttpGet("ListaActividades")]
         public IActionResult ListaActividades()
         {
