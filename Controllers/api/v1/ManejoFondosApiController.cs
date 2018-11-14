@@ -34,8 +34,8 @@ namespace Travlr.Controllers
             {
                 return NotFound();
             }
-            var usuariosGrupo = new GrupoViewModel { GrupoID = grupo.GrupoID, FondoComun = grupo.FondoComun };
-            return Json(usuariosGrupo);
+            var grupoVM = new GrupoViewModel { GrupoID = grupo.GrupoID, FondoComun = grupo.FondoComun };
+            return Json(grupoVM);
         }
 
         [HttpPost("ManejoFondos")]
@@ -53,7 +53,7 @@ namespace Travlr.Controllers
                     grupo.FondoComun.Monto += gvm.monto;
                     UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
                     UnitOfWork.Complete();
-                    return Json(new { mensaje = "Se agrego $" + gvm.monto + " al fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                    return Json(new { mensaje = "Nuevo monto" + grupo.FondoComun.Monto });
                 }
                 else
                 {
@@ -62,7 +62,7 @@ namespace Travlr.Controllers
                         grupo.FondoComun.Monto += gvm.monto;
                         UnitOfWork.FondoComunRepository.Update(grupo.FondoComun);
                         UnitOfWork.Complete();
-                        return Json(new { mensaje = "Se saco $" + gvm.monto * -1 + " del fondo comun. El nuevo saldo es de : $" + grupo.FondoComun.Monto });
+                        return Json(new { mensaje = "Nuevo monto " + grupo.FondoComun.Monto });
                     }
                     else
                     {
