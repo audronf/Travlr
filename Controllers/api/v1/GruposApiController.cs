@@ -34,7 +34,7 @@ namespace Travlr.Controllers
             {
                 gruposUsuario.Add(UnitOfWork.GrupoRepository.Get(grupo.GrupoID));
             }
-            return View(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre }));
+            return Json(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre }));
         }
 
         [HttpPost("Create")]
@@ -64,6 +64,10 @@ namespace Travlr.Controllers
         {
             var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupo = UnitOfWork.GrupoRepository.Get(gvm.GrupoID);
+            if (grupo == null)
+            {
+                return Json(new { mensaje = "No existe un grupo con ese código" });
+            }
             var admin = UsuarioRepository.UserManager.FindByIdAsync(grupo.AdministradorId).Result;
             var yaEsMiembo = UnitOfWork.UsuarioGrupoRepository.GetAll().ToList().Any(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id);
             if (!yaEsMiembo)
@@ -76,11 +80,29 @@ namespace Travlr.Controllers
             return Json(new { mensaje = "Ya formas parte de ese grupo" });
         }
 
+        /*Eliminado fisico de grupo */
+        [HttpGet("Eliminar")]
+        public IActionResult Eliminar([FromBody]GrupoViewModel gvm)
+        {
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            if (grupo == null)
+            {
+                return Json(new { mensaje = "El id " + gvm.GrupoID + " no existe" });
+            }
+            UnitOfWork.GrupoRepository.Remove(grupo);
+            return Json(new { mensaje = "Se ha eliminado el grupo correctamente" });
+        }
+
         [HttpGet("Detalles")]
         public IActionResult Detalles(int id)
         {
-            var grupo = UnitOfWork.GrupoRepository.Get(id);
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
             var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
+
             var miembros = new List<Usuario>();
             foreach (var miembro in miembrosGrupo)
             {
@@ -88,6 +110,51 @@ namespace Travlr.Controllers
             }
             var usuariosGrupo = new UsuariosGrupoViewModel { Usuarios = miembros, NombreGrupo = grupo.Nombre };
             return Json(usuariosGrupo);
+        }
+
+        [HttpGet("DejarGrupo")]
+        public IActionResult DejarGrupo(int id)
+        {
+            var grupo = UnitOfWork.GrupoRepository.Get(id);
+            if (grupo == null)
+            {
+                return NotFound();
+            }
+            var miembrosGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID);
+            var miembros = new List<Usuario>();
+            foreach (var miembro in miembrosGrupo)
+            {
+                miembros.Add(UsuarioRepository.UserManager.FindByIdAsync(miembro.UsuarioId).Result);
+            }
+            var usuariosGrupo = new UsuariosGrupoViewModel { GrupoID = grupo.GrupoID, Usuarios = miembros, NombreGrupo = grupo.Nombre };
+            return Json(usuariosGrupo);
+        }
+
+        [HttpPost("DejarGrupo")]
+        public IActionResult DejarGrupoConfirm([FromBody]UsuariosGrupoViewModel gvm)
+        {
+            try
+            {
+                var usuario = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+                var usuarioGrupo = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(ug => ug.GrupoID == gvm.GrupoID && ug.UsuarioId == usuario.Id).FirstOrDefault();
+                UnitOfWork.UsuarioGrupoRepository.RemoveUsuarioGrupo(usuarioGrupo);
+                UnitOfWork.Complete();
+                return RedirectToAction("Index", "Grupos");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        [HttpGet("SemanaActividades")]
+        public IActionResult SemanaActividades(int id)
+        {
+            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            var actconf = grupo.Actividades.Select(a => new Actividad { ID = a.ID, FechaHora = a.FechaHora, Descripcion = a.Descripcion }).Where(act => act.Confirmados.All(a => a.Asiste == true && a.UsuarioId == logged.Id));
+            var vm = actconf.Select(act => new ActividadViewModel { Descripcion = act.Descripcion, FechaHora = act.FechaHora, Id = act.ID });
+            return Json(vm);
         }
     }
 }
