@@ -26,9 +26,11 @@ namespace Travlr.Controllers
         }
 
         [HttpGet("ListaActividades")]
-        public IActionResult ListaActividades()
+        public IActionResult ListaActividades(int id)
         {
-            return View();
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            var avm = grupo.Actividades.Select(ac => new ActividadViewModel { Id = ac.ID, Descripcion = ac.Descripcion, FechaHora = ac.FechaHora });
+            return Json(avm);
         }
 
         [HttpGet("CrearActividad")]

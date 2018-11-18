@@ -26,19 +26,19 @@ namespace Travlr.Controllers
         }
 
         [HttpGet("ListaEncuestas")]
-        public IActionResult ListaEncuestas()
+        public IActionResult ListaEncuestas(int id)
         {
-            //copy paste, no lo hice
-            var encuestas = UnitOfWork.EncuestaRepository.GetAll().ToList();
-            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-            var grupos = UnitOfWork.UsuarioGrupoRepository.GetAll().Where(u => u.UsuarioId == logged.Id);
-            List<Grupo> gruposUsuario = new List<Grupo>();
-            foreach (var grupo in grupos)
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
+            var avm = new List<EncuestasViewModel>();
+            //var avm = grupo.Encuestas.Select(en => new EncuestasViewModel { ID = en.ID, Pregunta = en.Pregunta, Opciones = en.Opciones });
+            var opciones = new List<Opcion>();
+            foreach(var encuesta in grupo.Encuestas)
             {
-                gruposUsuario.Add(UnitOfWork.GrupoRepository.Get(grupo.GrupoID));
+                var ec = UnitOfWork.EncuestaRepository.GetPeroCompleto(encuesta.ID);
+                var e = new EncuestasViewModel{ID = encuesta.ID, Pregunta = encuesta.Pregunta, Opciones = ec.Opciones};
+                avm.Add(e);
             }
-            return Json(gruposUsuario.Select(g => new GrupoViewModel { GrupoID = g.GrupoID, Nombre = g.Nombre }));
-
+            return Json(avm);
         }
 
         [HttpPost("CrearEncuesta")]

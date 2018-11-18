@@ -25,8 +25,8 @@ namespace Travlr.Controllers
             this._userRepository = new UsuarioRepository(options, userManager);
         }
 
-        [HttpPost("FechasDisponibilidad")]
-        public IActionResult FechasDisponibilidad(GrupoViewModel gvm)
+        [HttpPost("AgregarFechasDisponibilidad")]
+        public IActionResult AgregarFechasDisponibilidad(GrupoViewModel gvm)
         {
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var fechaDisp = new FechaDisponibilidad { UsuarioId = logged.Id, FechaInicio = gvm.FechaDisponibilidad.FechaInicio, FechaFin = gvm.FechaDisponibilidad.FechaFin };

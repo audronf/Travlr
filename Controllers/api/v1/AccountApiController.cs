@@ -83,5 +83,38 @@ namespace Travlr.Controllers
         {
             return Json(await UserManager.FindByNameAsync(User.Identity.Name));
         }
+
+        [AllowAnonymous]
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody]UsuarioViewModel userViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new Usuario { UserName = userViewModel.Nombre, Email = userViewModel.Email, NickName = userViewModel.NickName };
+                var result = await UserManager.CreateAsync(user, userViewModel.Password);
+                if (result.Succeeded)
+                {
+                    await SignInManager.SignInAsync(user, true);
+                    var appUser = UserManager.Users.SingleOrDefault(r => r.Email == user.Email);
+                    Response.StatusCode = StatusCodes.Status200OK;
+                    var configVariables = new Dictionary<string, string>
+                    {
+                        { "key", Configuration["Jwt:Key"] },
+                        { "expire", Configuration["Jwt:ExpireDays"] },
+                        { "issuer", Configuration["Jwt:Issuer"] },
+                    };
+                    return Json(  new { Token = AccountHelper.GenerateJwtToken(user.Email, appUser, configVariables) });
+                }
+                else foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return Json(userViewModel);
+        }
+
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await SignInManager.SignOutAsync();
+            return Json("Logged out");
+        }
     }
 }
