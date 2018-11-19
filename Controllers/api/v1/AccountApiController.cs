@@ -47,7 +47,8 @@ namespace Travlr.Controllers
         [HttpPost("SignIn")]
         public async Task<object> SignIn([FromBody] LoginViewModel loginViewModel)
         {
-            var result = await SignInManager.PasswordSignInAsync(loginViewModel.Nombre, loginViewModel.Password, loginViewModel.RememberMe, false);
+            var userName = UserManager.FindByEmailAsync(loginViewModel.Email).Result;
+            var result = await SignInManager.PasswordSignInAsync(userName.UserName, loginViewModel.Password, loginViewModel.RememberMe, false);
             object response;
             if (result.Succeeded)
             {
