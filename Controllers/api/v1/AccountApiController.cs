@@ -78,7 +78,6 @@ namespace Travlr.Controllers
             return Json(response);
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("Me")]
         public async Task<IActionResult> Me()
         {
