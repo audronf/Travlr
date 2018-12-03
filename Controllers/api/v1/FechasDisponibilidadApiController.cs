@@ -26,11 +26,11 @@ namespace Travlr.Controllers
         }
 
         [HttpPost("AgregarFechasDisponibilidad")]
-        public IActionResult AgregarFechasDisponibilidad(GrupoViewModel gvm)
+        public IActionResult AgregarFechasDisponibilidad(FechaDisponibilidadViewModel fvm)
         {
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-            var fechaDisp = new FechaDisponibilidad { UsuarioId = logged.Id, FechaInicio = gvm.FechaDisponibilidad.FechaInicio, FechaFin = gvm.FechaDisponibilidad.FechaFin };
-            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            var fechaDisp = new FechaDisponibilidad { UsuarioId = logged.Id, FechaInicio = fvm.FechaInicio, FechaFin = fvm.FechaFin };
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(fvm.GrupoID);
             if (grupo.FechasDisponibilidad == null)
             {
                 grupo.FechasDisponibilidad = new List<FechaDisponibilidad>();

@@ -6,13 +6,9 @@ namespace Travlr.Models.Views
 {
     public class ActividadViewModel
     {
-        [Required]
-        public int Id { get; set; }
-
-        [Required]
+        public int GrupoID { get; set; }
+        public int ActividadID { get; set; }
         public string Descripcion { get; set; }
-
-        [Required]
         public DateTime FechaHora { get; set; }
 
     }

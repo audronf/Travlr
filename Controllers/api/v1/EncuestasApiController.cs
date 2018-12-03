@@ -30,22 +30,21 @@ namespace Travlr.Controllers
         {
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
             var avm = new List<EncuestasViewModel>();
-            //var avm = grupo.Encuestas.Select(en => new EncuestasViewModel { ID = en.ID, Pregunta = en.Pregunta, Opciones = en.Opciones });
             var opciones = new List<Opcion>();
-            foreach(var encuesta in grupo.Encuestas)
+            foreach (var encuesta in grupo.Encuestas)
             {
                 var ec = UnitOfWork.EncuestaRepository.GetPeroCompleto(encuesta.ID);
-                var e = new EncuestasViewModel{ID = encuesta.ID, Pregunta = encuesta.Pregunta, Opciones = ec.Opciones};
+                var e = new EncuestasViewModel { EncuestaID = encuesta.ID, Pregunta = encuesta.Pregunta, Opciones = ec.Opciones, Votaste = ec.Votaron.Where(g => g.ID == encuesta.ID).FirstOrDefault().Voto };
                 avm.Add(e);
             }
             return Json(avm);
         }
 
         [HttpPost("CrearEncuesta")]
-        public IActionResult CrearEncuesta([FromBody]GrupoViewModel gvm)
+        public IActionResult CrearEncuesta([FromBody]EncuestasViewModel evm)
         {
-            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
-            var encuesta = new Encuesta { Pregunta = gvm.Encuesta.Pregunta };
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(evm.GrupoID);
+            var encuesta = new Encuesta { Pregunta = evm.Pregunta };
             var votacion = new List<Votaron>();
             foreach (var usuario in UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID))
             {
@@ -53,9 +52,9 @@ namespace Travlr.Controllers
                 votacion.Add(vt);
             }
             var OpcionesList = new List<Opcion>();
-            foreach (var opcion in gvm.Opciones)
+            foreach (var opcion in evm.Opciones)
             {
-                var op = new Opcion { Texto = opcion, Cantidad = 0 };
+                var op = new Opcion { Texto = opcion.Texto, Cantidad = 0 };
                 OpcionesList.Add(op);
             }
             encuesta.Opciones = OpcionesList;
@@ -71,18 +70,34 @@ namespace Travlr.Controllers
         }
 
         [HttpPost("VotarEncuesta")]
-        public IActionResult VotarEncuesta([FromBody]GrupoViewModel gvm)
+        public IActionResult VotarEncuesta([FromBody]EncuestasViewModel evm)
         {
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-            var encuesta = UnitOfWork.EncuestaRepository.GetPeroCompleto(gvm.Encuesta.ID);
+            var encuesta = UnitOfWork.EncuestaRepository.GetPeroCompleto(evm.EncuestaID);
             if (encuesta.Votaron.Where(u => u.UsuarioId == logged.Id).FirstOrDefault().Voto == false)
             {
                 encuesta.Votaron.Where(u => u.UsuarioId == logged.Id).FirstOrDefault().Voto = true;
-                encuesta.Opciones.Where(o => o.ID == gvm.OpcionSelect /* int del numero de opcion */).FirstOrDefault().Cantidad++;
+                encuesta.Opciones.Where(o => o.ID == evm.OptionSelected).FirstOrDefault().Cantidad++;
                 UnitOfWork.EncuestaRepository.Update(encuesta);
                 UnitOfWork.Complete();
             }
             return Json("votaste");
         }
+
+        [HttpPost("AgregarOpcionEncuesta")]
+        public IActionResult AgregarOpcion([FromBody]OpcionViewModel ovm)
+        {
+            var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
+            var encuesta = UnitOfWork.EncuestaRepository.GetPeroCompleto(ovm.EncuestaID);
+            if (!encuesta.Opciones.Where(u => u.Texto.ToLower() == ovm.Opcion.ToLower()).Any())
+            {
+                var opcion = new Opcion { Texto = ovm.Opcion, Cantidad = 0 };
+                encuesta.Opciones.Add(opcion);
+                UnitOfWork.EncuestaRepository.Update(encuesta);
+                UnitOfWork.Complete();
+            }
+            return Json("opcion agregada");
+        }
+
     }
 }

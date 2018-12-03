@@ -6,6 +6,7 @@ namespace Travlr.Models
     public class FechaDisponibilidadViewModel
     {
         public int ID { get; set; }
+        public int GrupoID { get; set; }
         public virtual Usuario Usuario { get; set; }
 
         [Display(Name = "Release Date")]

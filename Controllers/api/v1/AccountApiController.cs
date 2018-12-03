@@ -18,12 +18,16 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using AssignmentsNetcore.Helpers;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Travlr.Controllers
 {
     [Route("api/v1/[controller]")]
     public class AccountApiController : Controller
     {
+        private const string AuthSchemes =
+        CookieAuthenticationDefaults.AuthenticationScheme + "," +
+        JwtBearerDefaults.AuthenticationScheme;
         private readonly SignInManager<Usuario> _signInManager;
         private readonly UserManager<Usuario> _userManager;
         private readonly IConfiguration _configuration;
@@ -78,10 +82,11 @@ namespace Travlr.Controllers
             return Json(response);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("Me")]
         public async Task<IActionResult> Me()
         {
-            return Json(await UserManager.FindByNameAsync(User.Identity.Name));
+            return Json(await UserManager.FindByEmailAsync(User.Identity.Name));
         }
 
         [AllowAnonymous]
@@ -103,7 +108,7 @@ namespace Travlr.Controllers
                         { "expire", Configuration["Jwt:ExpireDays"] },
                         { "issuer", Configuration["Jwt:Issuer"] },
                     };
-                    return Json(  new { Token = AccountHelper.GenerateJwtToken(user.Email, appUser, configVariables) });
+                    return Json(new { Token = AccountHelper.GenerateJwtToken(user.Email, appUser, configVariables) });
                 }
                 else foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
             }

@@ -153,7 +153,7 @@ namespace Travlr.Controllers
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
             var actconf = grupo.Actividades.Select(a => new Actividad { ID = a.ID, FechaHora = a.FechaHora, Descripcion = a.Descripcion }).Where(act => act.Confirmados.All(a => a.Asiste == true && a.UsuarioId == logged.Id));
-            var vm = actconf.Select(act => new ActividadViewModel { Descripcion = act.Descripcion, FechaHora = act.FechaHora, Id = act.ID });
+            var vm = actconf.Select(act => new ActividadViewModel { Descripcion = act.Descripcion, FechaHora = act.FechaHora, ActividadID = act.ID });
             return Json(vm);
         }
     }

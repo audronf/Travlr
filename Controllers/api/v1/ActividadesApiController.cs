@@ -29,7 +29,7 @@ namespace Travlr.Controllers
         public IActionResult ListaActividades(int id)
         {
             var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(id);
-            var avm = grupo.Actividades.Select(ac => new ActividadViewModel { Id = ac.ID, Descripcion = ac.Descripcion, FechaHora = ac.FechaHora });
+            var avm = grupo.Actividades.Select(ac => new ActividadViewModel { ActividadID = ac.ID, Descripcion = ac.Descripcion, FechaHora = ac.FechaHora });
             return Json(avm);
         }
 
@@ -46,11 +46,11 @@ namespace Travlr.Controllers
         }
 
         [HttpPost("CrearActividad")]
-        public IActionResult CrearActividad([FromBody]GrupoViewModel gvm)
+        public IActionResult CrearActividad([FromBody]ActividadViewModel avm)
         {
-            var actividad = new Actividad { Descripcion = gvm.Actividad.Descripcion, FechaHora = DateTime.Today /* aca llega una fecha */ };
+            var actividad = new Actividad { Descripcion = avm.Descripcion, FechaHora = DateTime.Today };
             var disponibles = new List<ActividadConfirmado>();
-            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(gvm.GrupoID);
+            var grupo = UnitOfWork.GrupoRepository.GetPeroCompleto(avm.GrupoID);
             foreach (var usuario in UnitOfWork.UsuarioGrupoRepository.GetAll().Where(g => g.GrupoID == grupo.GrupoID))
             {
                 var ac = new ActividadConfirmado { UsuarioId = usuario.UsuarioId, Asiste = false };
@@ -67,24 +67,18 @@ namespace Travlr.Controllers
             return Json("esto funciona");
         }
 
-        [HttpGet("ConfirmarAsistencia")]
-        public IActionResult ConfirmarAsistencia(int id)
-        {
-            return View();
-        }
-
         [HttpPost("ConfirmarAsistencia")]
-        public IActionResult ConfirmarAsistencia([FromBody]GrupoViewModel gvm)
+        public IActionResult ConfirmarAsistencia([FromBody]ActividadViewModel avm)
         {
             var logged = UsuarioRepository.UserManager.FindByNameAsync(User.Identity.Name).Result;
-            var actividad = UnitOfWork.ActividadRepository.GetPeroCompleto(gvm.Actividad.ID);
+            var actividad = UnitOfWork.ActividadRepository.GetPeroCompleto(avm.ActividadID);
             if (actividad.Confirmados.Where(u => u.UsuarioId == logged.Id).FirstOrDefault().Asiste == false)
             {
                 actividad.Confirmados.Where(u => u.UsuarioId == logged.Id).FirstOrDefault().Asiste = true;
                 UnitOfWork.ActividadRepository.Update(actividad);
                 UnitOfWork.Complete();
             }
-            return Json("asistis");
+            return Json("asiste");
         }
     }
 }
